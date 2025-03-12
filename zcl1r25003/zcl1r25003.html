@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25003</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25003</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] ITAB Data access</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25003</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25003.
+
+<font color ="#0000FF">****************************************</font>
+<font color ="#0000FF">*Internal table and work area</font>
+<font color ="#0000FF">****************************************</font>
+DATA : BEGIN OF gs_data,
+         carrid   TYPE scarr-carrid,  "### ##
+         connid   TYPE spfli-connid,  "##### ##
+         fldate   TYPE sflight-fldate, "####
+         carrname TYPE scarr-carrname, "####
+         cityfrom TYPE spfli-cityfrom, "####
+         cityto   TYPE spfli-cityto,  "####
+         size     TYPE i,             "Length
+       END OF gs_data,
+       gt_data LIKE TABLE OF gs_data.
+
+DATA : gt_data2 LIKE TABLE OF gs_data,
+       gt_data3 LIKE gt_data,
+       gs_data3 LIKE LINE OF gt_data.
+
+DATA : gt_info TYPE zlvc_t_info25,
+       gs_info TYPE LINE OF zlvc_t_info25.
+
+
+<font color ="#0000FF">****************************************</font>
+<font color ="#0000FF">*Data access</font>
+<font color ="#0000FF">****************************************</font>
+
+<font color ="#0000FF">*1) work area# data# ## ####. (CARRID &lt;- 'LH', CONNID &lt;- 0400)</font>
+CLEAR : gt_data, gs_data.
+gs_data-carrid = 'LH'.
+gs_data-connid = '0400'.
+gs_data-fldate = sy-datum. "System date
+gs_data-carrname = 'Luft hanza'.
+gs_data-cityfrom = 'seoul'.
+gs_data-cityto = 'tokyo'.
+
+
+
+<font color ="#0000FF">*2) work area# ### data# #### internal table# data# ##</font>
+
+APPEND gs_data TO gt_data.
+
+CLEAR : gs_data.
+gs_data-carrid = 'AA'.
+gs_data-connid = '0100'.
+gs_data-fldate = '20250105'.
+gs_data-carrname  = 'American airline'.
+
+INSERT gs_data INTO TABLE gt_data.
+
+CLEAR : gs_data.
+gs_data-carrid = 'CA'.
+gs_data-connid = '0700'.
+gs_data-fldate = '20250101'.
+gs_data-carrname  = 'Canada airline'.
+
+INSERT gs_data INTO gt_data INDEX 1. "CA# index 1### # ## ## 1) CA 2) LH 3) AA # ## #
+
+
+<font color ="#0000FF">*CASE 1 : WITH KEY</font>
+CLEAR gs_data.
+READ TABLE gt_data INTO gs_data WITH KEY carrid = 'AA'
+                                         connid = '0100'. "### id# aa# record# ###, ### #### data# ##### # index# ### ###
+<font color ="#0000FF">*CASE 2 : INDEX</font>
+CLEAR gs_data.
+READ TABLE gt_data INTO gs_data INDEX 2. "### record# ### " index 2# ## ### LH# ####
+"cl_demo_output=&gt;display( gs_data ).
+
+CLEAR : gs_data.
+gs_data-carrid = 'CA'.
+gs_data-connid = '0700'.
+gs_data-fldate = '20250101'.
+gs_data-carrname  = 'Canada airline'.
+gs_data-size = 17. "Updated data
+
+MODIFY gt_data FROM gs_data INDEX 1 TRANSPORTING size.
+<font color ="#0000FF">* transproting: ##### ## ### #### ## ### ##### # work area -&gt; internal table</font>
+
+
+DELETE gt_data WHERE carrid EQ 'AA'
+                AND  connid EQ '0100'.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( gt_data ).</font>
+
+
+
+
+LOOP AT gt_data INTO gs_data.
+
+<font color ="#0000FF">* Assign value</font>
+  gs_data-size = gs_data-size + 1.
+
+<font color ="#0000FF">* Apply to Itab</font>
+  MODIFY gt_data FROM gs_data INDEX sy-tabix TRANSPORTING size.
+  "modify# index# ### ## data# ## ### ## ### index# ##### #### ### ## # ##
+  "### ### #### ## #### ### ##### #
+  "#### #### ### #### -&gt; transporting
+
+  WRITE :/ gs_data-carrid, gs_data-connid, gs_data-carrname.
+
+ENDLOOP.
+
+
+LOOP AT gt_data INTO gs_data WHERE carrid EQ 'AA'.
+
+  WRITE :/ gs_data-carrid, gs_data-connid, gs_data-carrname.
+
+ENDLOOP.
+
+
+<font color ="#0000FF">*Copy data (## #### #### ####)</font>
+<font color ="#0000FF">*gt_data2 = gt_data.</font>
+
+<font color ="#0000FF">*Process set data</font>
+
+INSERT LINES OF gt_data FROM 2 TO 3 INTO gt_data2 INDEX 2.
+
+APPEND LINES OF gt_data FROM 2 TO 3 TO gt_data2.
+
+BREAK-POINT.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

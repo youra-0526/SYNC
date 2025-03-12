@@ -1,0 +1,434 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25044F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25044F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25044F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25044F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_main_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_main_data .
+
+  CLEAR : gt_body.
+  SELECT a~carrid carrname b~connid fldate planetype price currency url
+    INTO CORRESPONDING FIELDS OF TABLE gt_body
+    FROM scarr AS a INNER JOIN sflight AS b
+      ON a~carrid EQ b~carrid
+   WHERE a~carrid IN so_carr
+     AND b~connid IN so_conn.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_main_logic</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_main_logic .
+
+  DATA : lv_tabix TYPE sy-tabix,
+         ls_scol  TYPE lvc_s_scol.
+
+  LOOP AT gt_body INTO gs_body.
+
+    lv_tabix = sy-tabix.
+
+    CLEAR : ls_scol, gs_body-color. "Clear the Color Manger
+    CASE gs_body-currency.
+      WHEN 'USD'.
+<font color ="#0000FF">*       ls_scol-fname     = ' '.</font>
+<font color ="#0000FF">*       ls_scol-nokeycol  = abap_true.</font>
+        ls_scol-color-col = 5.
+        ls_scol-color-inv = 1.
+        INSERT ls_scol INTO TABLE gs_body-color.
+
+        CLEAR ls_scol.
+      WHEN 'EUR'.
+<font color ="#0000FF">*       ls_scol-fname     = ' '.</font>
+        ls_scol-color-col = 7.
+        ls_scol-color-int = 1.
+        INSERT ls_scol INTO TABLE gs_body-color.
+    ENDCASE.
+
+    MODIFY gt_body FROM gs_body INDEX lv_tabix TRANSPORTING color.
+
+  ENDLOOP.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form hanlde_hotspot_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_ROW_ID</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN_ID</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM hanlde_hotspot_click  USING    pv_row_id
+                                    pv_column_id.
+
+<font color ="#0000FF">*-- #### ### ## data# ##</font>
+  CLEAR : gs_body.
+  READ TABLE gt_body INTO gs_body INDEX pv_row_id.
+
+  CLEAR : gt_lane.
+  SELECT planetype seatsmax tankcap cap_unit weight wei_unit
+    INTO CORRESPONDING FIELDS OF TABLE gt_lane
+    FROM saplane
+   WHERE planetype EQ gs_body-planetype.
+
+  CALL SCREEN 110 STARTING AT 05 10.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_screen .
+
+  IF go_container IS INITIAL.
+
+    CLEAR : gs_fcat, gt_fcat.
+    PERFORM set_field_catalog USING : 'X' 'CARRID'    'SCARR'   ' ' ' ',
+                                      'X' 'CARRNAME'  'SCARR'   ' ' ' ',
+                                      'X' 'CONNID'    'SFLIGHT' ' ' ' ',
+                                      ' ' 'FLDATE'    'SFLIGHT' ' ' ' ',
+                                      ' ' 'PLANETYPE' 'SFLIGHT' ' ' 'X',
+                                      ' ' 'PRICE'     'SFLIGHT' ' ' ' ',
+                                      ' ' 'CURRENCY'  'SFLIGHT' ' ' ' ',
+                                      ' ' 'URL'       'SCARR'   ' ' 'X'.
+
+    PERFORM set_layout.
+    PERFORM create_object.
+
+<font color ="#0000FF">*-- Event# ALV# ##</font>
+    SET HANDLER : go_event-&gt;hotspot_click FOR go_alv_grid,
+                  go_event-&gt;double_click FOR go_alv_grid.
+
+    CALL METHOD go_alv_grid-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = gs_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layout
+      CHANGING
+        it_outtab       = gt_body
+        it_fieldcatalog = gt_fcat.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_catalog USING : pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_fcat-key         = pv_key.
+  gs_fcat-fieldname   = pv_field.
+  gs_fcat-ref_table   = pv_table.
+  gs_fcat-just        = pv_just.
+  gs_fcat-emphasize   = pv_emph.
+
+  CASE pv_field.
+    WHEN 'PLANETYPE'.
+      gs_fcat-hotspot = abap_true.
+    WHEN 'PRICE'.
+      gs_fcat-do_sum  = 'X'.
+  ENDCASE.
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layout .
+
+  gs_layout-zebra      = abap_true.
+  gs_layout-cwidth_opt = abap_true.
+  gs_layout-sel_mode   = 'D'.
+  gs_layout-ctab_fname = 'COLOR'.
+  gs_layout-totals_bef = abap_true.
+
+  gs_variant-report    = sy-repid.
+  gs_variant-handle    = 'ALV1'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_object .
+
+  CREATE OBJECT go_container
+    EXPORTING
+      side      = go_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT go_alv_grid
+    EXPORTING
+      i_parent = go_container.
+
+  CREATE OBJECT go_event.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_popup_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_popup_screen .
+
+  DATA : ls_variant TYPE disvariant.
+
+  IF go_pop_cont IS INITIAL.
+
+    CLEAR : gs_pfcat, gt_pfcat.
+    PERFORM set_field_popup_catalog USING : 'X' 'PLANETYPE' 'SAPLANE' ' ' ' ',
+                                            ' ' 'SEATSMAX'  'SAPLANE' ' ' ' ',
+                                            ' ' 'TANKCAP'   'SAPLANE' ' ' ' ',
+                                            ' ' 'CAP_UNIT'  'SAPLANE' ' ' ' ',
+                                            ' ' 'WEIGHT'    'SAPLANE' ' ' 'X',
+                                            ' ' 'WEI_UNIT'  'SAPLANE' ' ' 'X'.
+    PERFORM set_popup_layout.
+    PERFORM create_popup_object.
+
+    ls_variant-report    = sy-repid.
+    ls_variant-handle    = 'POP1'.
+
+    CALL METHOD go_pop_grid-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = ls_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_playout
+      CHANGING
+        it_outtab       = gt_lane
+        it_fieldcatalog = gt_pfcat.
+  ENDIF.
+
+
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_popup_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_popup_catalog USING : pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_pfcat-key       = pv_key.
+  gs_pfcat-fieldname = pv_field.
+  gs_pfcat-ref_table = pv_table.
+  gs_pfcat-just      = pv_just.
+  gs_pfcat-emphasize = pv_emph.
+
+  APPEND gs_pfcat TO gt_pfcat.
+  CLEAR gs_pfcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_popup_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_popup_object .
+
+  CREATE OBJECT go_pop_cont
+    EXPORTING
+      container_name = 'POP_CONT'.
+
+  CREATE OBJECT go_pop_grid
+    EXPORTING
+      i_parent = go_pop_cont.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_popup_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_popup_layout .
+
+  gs_playout-zebra      = abap_true.
+  gs_playout-cwidth_opt = abap_true.
+  gs_playout-sel_mode   = 'D'.
+  gs_playout-ctab_fname = 'COLOR'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_double_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_ROW</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_double_click  USING    pv_row
+                                   pv_column.
+
+  CLEAR : gs_body.
+  READ TABLE gt_body INTO gs_body INDEX pv_row.
+
+  CLEAR : gt_book.
+  SELECT carrid connid fldate bookid customid custtype
+         luggweight wunit loccuram loccurkey
+    INTO CORRESPONDING FIELDS OF TABLE gt_book
+    FROM sbook
+   WHERE carrid EQ gs_body-carrid
+     AND connid EQ gs_body-connid
+     AND fldate EQ gs_body-fldate.
+
+  CALL SCREEN 120 STARTING AT 05 10.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_popup2_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_popup2_screen .
+
+  DATA : ls_variant TYPE disvariant.
+
+  IF go_pop_cont2 IS INITIAL.
+
+    CLEAR : gs_pfcat2, gt_pfcat2.
+    PERFORM set_field_popup2_catalog USING : 'X' 'CARRID'     'SBOOK' ' ' ' ',
+                                             'X' 'CONNID'     'SBOOK' ' ' ' ',
+                                             'X' 'FLDATE'     'SBOOK' ' ' ' ',
+                                             'X' 'BOOKID'     'SBOOK' ' ' ' ',
+                                             ' ' 'CUSTOMID'   'SBOOK' ' ' ' ',
+                                             ' ' 'CUSTTYPE'   'SBOOK' ' ' ' ',
+                                             ' ' 'LUGGWEIGHT' 'SBOOK' ' ' ' ',
+                                             ' ' 'WUNIT'      'SBOOK' ' ' ' ',
+                                             ' ' 'LOCCURAM'   'SBOOK' ' ' 'X',
+                                             ' ' 'LOCCURKEY'  'SBOOK' ' ' 'X'.
+    PERFORM set_popup2_layout.
+    PERFORM create_popup2_object.
+
+    ls_variant-report    = sy-repid.
+    ls_variant-handle    = 'POP2'.
+
+    CALL METHOD go_pop_grid2-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = ls_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_playout2
+      CHANGING
+        it_outtab       = gt_book
+        it_fieldcatalog = gt_pfcat2.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_popup2_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_popup2_catalog USING pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_pfcat2-key       = pv_key.
+  gs_pfcat2-fieldname = pv_field.
+  gs_pfcat2-ref_table = pv_table.
+  gs_pfcat2-just      = pv_just.
+  gs_pfcat2-emphasize = pv_emph.
+
+  APPEND gs_pfcat2 TO gt_pfcat2.
+  CLEAR gs_pfcat2.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_popup2_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_popup2_layout .
+
+  gs_playout2-zebra      = abap_true.
+  gs_playout2-cwidth_opt = abap_true.
+  gs_playout2-sel_mode   = 'D'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_popup2_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_popup2_object .
+
+  CREATE OBJECT go_pop_cont2
+    EXPORTING
+      container_name = 'POP_CONT2'.
+
+  CREATE OBJECT go_pop_grid2
+    EXPORTING
+      i_parent = go_pop_cont2.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

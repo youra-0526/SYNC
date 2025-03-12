@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25005</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25005</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  SQL</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25005</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25005.
+
+DATA : BEGIN OF gs_flight,
+         connid   TYPE sflight-connid,
+         fldate   TYPE sflight-fldate,
+         seatsocc TYPE sflight-seatsocc,
+       END OF gs_flight,
+       gt_flight LIKE TABLE OF gs_flight.
+
+DATA : BEGIN OF gs_airline,
+         carrid   TYPE scarr-carrid,
+         carrname TYPE scarr-carrname,
+         currcode TYPE scarr-currcode,
+       END OF gs_airline,
+       gt_airline LIKE TABLE OF gs_airline.
+
+DATA : BEGIN OF gs_unique,
+         carrid TYPE sflight-carrid,
+         connid TYPE sflight-connid,
+       END OF gs_unique,
+       gt_unique LIKE TABLE OF gs_unique.
+
+<font color ="#0000FF">*Get data</font>
+CLEAR : gt_flight, gs_flight.
+
+SELECT connid fldate seatsocc "data# ###
+  INTO TABLE gt_flight        "internal table ###
+  FROM sflight
+  WHERE seatsocc GT 200 " &gt; 200
+  ORDER BY connid DESCENDING seatsocc ASCENDING.
+
+
+<font color ="#0000FF">**********************</font>
+CLEAR : gt_airline, gs_airline.
+
+SELECT carrid carrname currcode
+  INTO TABLE gt_airline
+  FROM scarr
+  WHERE currcode EQ 'EUR'.
+
+<font color ="#0000FF">*********************</font>
+CLEAR : gs_unique, gt_unique.
+
+SELECT DISTINCT carrid connid "into table # # select ### ### ### ### ##
+  INTO TABLE gt_unique
+  FROM sflight
+  WHERE seatsocc GT 200.
+
+<font color ="#0000FF">*SELECT carrid carrname url</font>
+<font color ="#0000FF">*  INTO CORRESPONDING FIELDS OF TABLE gt_scarr</font>
+<font color ="#0000FF">*  FROM scarr</font>
+<font color ="#0000FF">*</font>
+
+<font color ="#0000FF">*SELECT SINGLE carrid carrname url " SELECT SINGLE # ##</font>
+<font color ="#0000FF">*  INTO CORRESPONDING FIELDS OF gs_scarr</font>
+<font color ="#0000FF">*  FROM scarr</font>
+
+" SFLIGHT ##### CARRID# ## SEATSOCC# ####, ### CARRID# #### #####.
+
+
+DATA :
+  gt_tax TYPE TABLE OF t007s,
+  gs_tax TYPE t007s.
+
+
+SELECT spras kalsm mwskz text1
+  FROM t007s
+  INTO CORRESPONDING FIELDS OF TABLE gt_tax
+  WHERE spras EQ sy-langu AND
+        kalsm EQ 'TAXKR'.
+
+
+SELECT SINGLE spras kalsm mwskz text1
+  FROM t007s
+  INTO gs_tax
+  WHERE spras EQ sy-langu AND
+        kalsm EQ 'TAXKR'.
+
+cl_demo_output=&gt;display( gs_tax ).
+
+DATA :
+  gt_cctr TYPE TABLE OF cskt, "cost center table# text table# ####
+  gs_cctr TYPE cskt.
+
+SELECT spras kokrs
+  FROM cskt
+  INTO TABLE gt_cctr
+  WHERE spras EQ sy-langu AND
+        kokrs EQ '0001'.
+
+
+DATA gt_scarr TYPE TABLE OF scarr.
+
+SELECT carrid carrname currcode url
+  FROM scarr
+  INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+  WHERE carrid BETWEEN 'AA' AND 'DL'.
+
+<font color ="#0000FF">*Carrid# 'AA' # 'DL' ### ## #### ####</font>
+SELECT carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+  FROM scarr
+  WHERE carrid BETWEEN 'AA' AND 'DL'.
+
+DATA : gs_scarr  TYPE scarr,
+       gv_carrid TYPE scarr-carrid.
+
+CLEAR gs_scarr.
+READ TABLE gt_scarr INTO gs_scarr INDEX 2.
+
+<font color ="#0000FF">*Carrid# 'AA', 'AB', 'CA', 'LH'# #### ####.</font>
+SELECT carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+  FROM scarr
+  WHERE carrid IN ('AA', 'AB', 'CA', 'LH').
+
+<font color ="#0000FF">*##</font>
+DATA : gs_sflight TYPE sflight,
+       gt_sflight TYPE TABLE OF sflight.
+
+SELECT carrid connid fldate currency planetype seatsmax seatsocc paymentsum
+  FROM sflight
+  INTO CORRESPONDING FIELDS OF TABLE gt_sflight
+  WHERE carrid IN ('AZ', 'QF')
+  AND planetype LIKE 'A%'.
+
+<font color ="#0000FF">*##</font>
+DATA : gs_sbook TYPE sbook,
+       gt_sbook TYPE TABLE OF sbook.
+
+SELECT carrid connid fldate bookid customid custtype smoker invoice forcuram
+  FROM sbook
+  INTO CORRESPONDING FIELDS OF TABLE gt_sbook
+  WHERE fldate BETWEEN '20240713' AND
+                       '20250220'
+  AND forcuram GT 800.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( gt_sbook ).</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

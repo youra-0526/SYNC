@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25033TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25033TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25033TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25033TOP                            - Report ZCL1R25033</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25033 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : scarr, spfli, sflight.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class Istance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_container TYPE REF TO cl_gui_custom_container,
+       go_alv_grid  TYPE REF TO cl_gui_alv_grid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*DATA : BEGIN OF gs_scarr.</font>
+<font color ="#0000FF">*         INCLUDE STRUCTURE scarr.</font>
+<font color ="#0000FF">*DATA :   status TYPE icon-id,</font>
+<font color ="#0000FF">*       END OF gs_scarr,</font>
+<font color ="#0000FF">*       gt_scarr LIKE TABLE OF gs_scarr.</font>
+
+DATA : gt_spfli TYPE TABLE OF spfli, "ALV# data# ### itab
+       gs_spfli TYPE spfli.
+
+<font color ="#0000FF">*-- For ALV</font>
+DATA : gs_layout TYPE lvc_s_layo.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+"screen## #### #### #### ## ##
+DATA : gv_okcode TYPE sy-ucomm.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

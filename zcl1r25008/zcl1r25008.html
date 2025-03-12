@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25008</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25008</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Open SQL - C.R.U.D</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25008</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25008.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Internal table and Work area</font>
+<font color ="#0000FF">*************************************</font>
+
+DATA : gt_board TYPE TABLE OF ztcl1board25,
+       gs_board TYPE ztcl1board25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Main logic</font>
+<font color ="#0000FF">*************************************</font>
+CLEAR : gt_board, gs_board.
+
+<font color ="#0000FF">**Creation of Single record</font>
+<font color ="#0000FF">*gs_board-seqno    = 9.</font>
+<font color ="#0000FF">*gs_board-author   = sy-uname.</font>
+<font color ="#0000FF">*gs_board-comp     = '1000'. "#### ## # 1000# ##</font>
+<font color ="#0000FF">*gs_board-zyear    = sy-datum. "sy-datum# ## 8####(#, #, #), 4### ### ## #</font>
+<font color ="#0000FF">*gs_board-zip_code = '113870'.</font>
+<font color ="#0000FF">*gs_board-zzone    = 'A'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*INSERT ztcl1board25 FROM gs_board.</font>
+<font color ="#0000FF">*IF sy-subrc EQ 0.</font>
+<font color ="#0000FF">*  COMMIT WORK.</font>
+<font color ="#0000FF">*ENDIF.</font>
+
+<font color ="#0000FF">*Creation of Multiple record</font>
+CLEAR gs_board.
+gs_board-seqno    = 12.
+gs_board-author   = sy-uname.
+gs_board-comp     = '2000'.
+gs_board-zyear    = sy-datum.
+gs_board-zip_code = '113872'.
+gs_board-zzone    = 'B'.
+APPEND gs_board TO gt_board.
+
+gs_board-seqno    = 13.
+gs_board-author   = sy-uname.
+gs_board-comp     = '3000'.
+gs_board-zyear    = sy-datum.
+gs_board-zip_code = '113872'.
+gs_board-zzone    = 'C'.
+APPEND gs_board TO gt_board.
+
+
+INSERT ztcl1board25 FROM TABLE gt_board
+                    ACCEPTING DUPLICATE KEYS.
+
+<font color ="#0000FF">*Update of single record (Update 1)</font>
+CLEAR gs_board.
+<font color ="#0000FF">*Set PK (pk# single record# ####)</font>
+gs_board-seqno  = 1.
+gs_board-author = sy-uname.
+
+<font color ="#0000FF">*Set Normal field for update (## ## # ##)</font>
+gs_board-comp   = '3000'.
+gs_board-zyear  = '2024'.
+
+UPDATE ztcl1board25 FROM gs_board.
+
+<font color ="#0000FF">*Update after get single record (Update 2)</font>
+CLEAR gs_board.
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_board
+  FROM ztcl1board25
+  WHERE seqno  EQ 13        "pk#### # -&gt; signle data ###
+    AND author EQ sy-uname.
+
+gs_board-comp     = '3000'. "## ## ##
+gs_board-zip_code = '00000'.
+gs_board-zyear    = '2028'.
+
+UPDATE ztcl1board25 FROM gs_board.
+
+<font color ="#0000FF">*Using set mode (### single record (Update 3))</font>
+UPDATE ztcl1board25
+   SET comp      = '5000'   "## ## # ##
+       title     = '#####'
+       reg_date  = sy-datum
+ WHERE seqno  EQ 12         " pk# single record ##
+   AND author EQ sy-uname.
+
+<font color ="#0000FF">*Update multiple record (Update 4)</font>
+CLEAR : gt_board, gs_board.
+<font color ="#0000FF">*Set PK</font>
+gs_board-seqno   = 1.
+gs_board-author  = 'LSW'.
+
+<font color ="#0000FF">*Set normal field for update</font>
+gs_board-kind   = 'C1'.
+gs_board-title  = 'Multiple Record'.
+APPEND gs_board TO gt_board.
+
+CLEAR gs_board.
+gs_board-seqno  = 2.
+gs_board-author = 'LEE'.
+gs_board-kind   = 'D1'.
+gs_board-title  = 'Multiple title'.
+APPEND gs_board TO gt_board.
+
+UPDATE ztcl1board25 FROM TABLE gt_board.
+
+<font color ="#0000FF">*Delete of single record (Delete 1)</font>
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno   = 3.
+gs_board-author  = 'KKK'.
+
+DELETE ztcl1board25 FROM gs_board.
+
+<font color ="#0000FF">*Delete of multiple record (Delete 2)</font>
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno   = 1.
+gs_board-author  = 'LSW'.
+APPEND gs_board TO gt_board.
+
+gs_board-seqno   = 2.
+gs_board-author  = 'LEE'.
+APPEND gs_board TO gt_board.
+
+DELETE ztcl1board25 FROM TABLE gt_board.
+
+<font color ="#0000FF">*(Delete 3)</font>
+DELETE FROM ztcl1board25
+    WHERE seqno EQ 1.              "# ## ## ##
+
+DELETE FROM ztcl1board25
+    WHERE seqno BETWEEN 12 AND 13. "# ## ### ##
+
+<font color ="#0000FF">*Using modify : Single record</font>
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno   = 5.
+gs_board-author  = sy-uname.
+gs_board-title   = 'NEW INSERTED'.
+
+MODIFY ztcl1board25 FROM gs_board.
+
+gs_board-seqno = 5.
+gs_board-author = sy-uname.
+gs_board-title = 'NEW UPDATED'.
+
+MODIFY ztcl1board25 FROM gs_board. "## record# pk# update# ##
+
+
+<font color ="#0000FF">*Using modify : Multiple record</font>
+CLEAR : gt_board, gs_board.
+
+<font color ="#0000FF">*Update record</font>
+gs_board-seqno    = 3.       "## pk
+gs_board-author   = sy-uname.
+
+gs_board-title    = 'Updated by MODIFY'. "update# ## ##
+APPEND gs_board TO gt_board.
+
+<font color ="#0000FF">*Create record</font>
+gs_board-seqno    = 6.      "## pk
+gs_board-author   = sy-uname.
+
+gs_board-title    = 'Created by MODIFY'.
+APPEND gs_board TO gt_board.
+
+MODIFY ztcl1board25 FROM TABLE gt_board.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*### ##</font>
+<font color ="#0000FF">*************************************</font>
+
+<font color ="#0000FF">*DATA : gt_board TYPE TABLE OF ztcl1board25,</font>
+<font color ="#0000FF">*       gs_board TYPE ztcl1board25.</font>
+
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno    = '7'.
+gs_board-author   = sy-uname.
+gs_board-comp     = '2000'.
+gs_board-zyear    = sy-datum.
+gs_board-zip_code = '06244'.
+gs_board-zzone    = 'B'.
+INSERT ztcl1board25 FROM gs_board.
+
+CLEAR : gt_board, gs_board.
+gs_board-seqno     = '8'.
+gs_board-author    = sy-uname.
+gs_board-comp      = '1000'.
+gs_board-zyear     = sy-datum.
+gs_board-zip_code  = '42515'.
+gs_board-zzone     = 'C'.
+APPEND gs_board TO gt_board.
+
+gs_board-seqno     = '10'.
+gs_board-author    = sy-uname.
+gs_board-comp      = '3000'.
+gs_board-zyear     = sy-datum.
+gs_board-zip_code  = '59140'.
+gs_board-zzone     = 'A'.
+APPEND gs_board TO gt_board.
+
+INSERT ztcl1board25 FROM TABLE gt_board
+                    ACCEPTING DUPLICATE KEYS.
+
+CLEAR : gt_board, gs_board.
+gs_board-seqno    = '8'.      "pk
+gs_board-author   = sy-uname. "pk
+
+gs_board-zip_code = '43533'.
+gs_board-comp     = '6000'.
+
+UPDATE ztcl1board25 FROM gs_board.
+
+CLEAR : gt_board, gs_board.
+gs_board-seqno    = '7'.
+gs_board-author   = sy-uname.
+
+gs_board-zip_code = '45453'.
+gs_board-comp     = '3000'.
+APPEND gs_board TO gt_board.
+
+gs_board-seqno    = '9'.
+gs_board-author   = sy-uname.
+
+gs_board-zip_code = '44484'.
+gs_board-comp     = '4000'.
+APPEND gs_board TO gt_board.
+
+UPDATE ztcl1board25 FROM gs_board.
+
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno  = '8'.
+gs_board-author = sy-uname.
+
+DELETE ztcl1board25 FROM gs_board.
+
+CLEAR : gt_board, gs_board.
+
+gs_board-seqno    = '8'.
+gs_board-author   = sy-uname.
+
+gs_board-zip_code = '47845'.
+gs_board-comp     = '2000'.
+APPEND gs_board TO gt_board.
+
+gs_board-seqno    = '7'.
+gs_board-author   = sy-uname.
+
+gs_board-zip_code = '42145'.
+gs_board-comp     = '1000'.
+gs_board-zzone    = 'A'.
+APPEND gs_board TO gt_board.
+
+MODIFY ztcl1board25 FROM TABLE gt_board.
+
+
+IF sy-subrc EQ 0.
+  COMMIT WORK.
+ELSE.
+  ROLLBACK WORK.
+ENDIF.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

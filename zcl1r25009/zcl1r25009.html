@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25009</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25009</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] open sql example</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25009</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25009.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*1/15 ## ZCL1BKPF25</font>
+<font color ="#0000FF">*************************************</font>
+
+DATA : gt_ex1 TYPE TABLE OF zcl1bkpf25,
+       gs_ex1 TYPE zcl1bkpf25.
+
+<font color ="#0000FF">*1#</font>
+
+CLEAR : gs_ex1, gt_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000000'.
+
+gs_ex1-gjahr = '2025'.
+gs_ex1-blart = 'SA'.
+gs_ex1-budat = '20250115'.
+gs_ex1-bktxt = 'First document header'.
+gs_ex1-waers = 'KRW'.
+gs_ex1-issue_no = 'TR202501001'.
+gs_ex1-issue_date = '20250105'.
+
+INSERT zcl1bkpf25 FROM gs_ex1.
+
+<font color ="#0000FF">*2#</font>
+
+CLEAR : gs_ex1, gt_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000001'.
+
+gs_ex1-gjahr = '2025'.
+gs_ex1-blart = 'SA'.
+gs_ex1-budat = '20250114'.
+gs_ex1-bktxt = 'Second document header'.
+gs_ex1-waers = 'USD'.
+gs_ex1-issue_no = 'TR202501002'.
+gs_ex1-issue_date = '20250105'.
+APPEND gs_ex1 TO gt_ex1.
+
+CLEAR gs_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000003'.
+
+gs_ex1-gjahr = '2025'.
+gs_ex1-blart = 'AB'.
+gs_ex1-budat = '20250110'.
+gs_ex1-bktxt = 'Third document header'.
+gs_ex1-waers = 'EUR'.
+gs_ex1-issue_no = 'TR202501003'.
+gs_ex1-issue_date = '20250105'.
+APPEND gs_ex1 TO gt_ex1.
+
+CLEAR gs_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000004'.
+
+gs_ex1-gjahr = '2025'.
+gs_ex1-blart = 'DR'.
+gs_ex1-budat = '20250102'.
+gs_ex1-bktxt = 'Customer invoice'.
+gs_ex1-waers = 'KRW'.
+gs_ex1-issue_no = 'TR202501004'.
+gs_ex1-issue_date = '20250105'.
+APPEND gs_ex1 TO gt_ex1.
+
+CLEAR gs_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000005'.
+
+gs_ex1-gjahr = '2025'.
+gs_ex1-blart = 'KR'.
+gs_ex1-budat = '20250103'.
+gs_ex1-bktxt = 'Vendor invoice'.
+gs_ex1-waers = 'KRW'.
+gs_ex1-issue_no   = 'TR202501005'.
+gs_ex1-issue_date = '20250110'.
+APPEND gs_ex1 TO gt_ex1.
+
+INSERT zcl1bkpf25 FROM TABLE gt_ex1
+                  ACCEPTING DUPLICATE KEYS.
+
+<font color ="#0000FF">**3#</font>
+<font color ="#0000FF">**CLEAR : gs_ex1, gt_ex1.</font>
+<font color ="#0000FF">**</font>
+<font color ="#0000FF">**gs_ex1-bukrs = '1000'.</font>
+<font color ="#0000FF">**gs_ex1-belnr = '0010000003'.</font>
+<font color ="#0000FF">**gs_ex1-gjahr = '2025'.</font>
+<font color ="#0000FF">**</font>
+<font color ="#0000FF">**gs_ex1-bktxt = 'Clearing document'.</font>
+<font color ="#0000FF">**</font>
+<font color ="#0000FF">**UPDATE zcl1bkpf25 FROM gs_ex1.</font>
+
+CLEAR gs_ex1.
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_ex1
+  FROM zcl1bkpf25
+ WHERE bukrs EQ '1000'
+   AND belnr EQ '0010000003'
+   AND gjahr EQ '2025'.
+
+gs_ex1-bktxt = 'Clearing document'.
+
+UPDATE zcl1bkpf25 FROM gs_ex1.
+
+
+<font color ="#0000FF">*4#</font>
+
+CLEAR : gs_ex1, gt_ex1.
+
+<font color ="#0000FF">*gs_ex1-bukrs = '1000'.</font>
+<font color ="#0000FF">*gs_ex1-belnr = '0010000004'.</font>
+<font color ="#0000FF">*gs_ex1-gjahr = '2025'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*gs_ex1-waers = 'EUR'.</font>
+<font color ="#0000FF">*APPEND gs_ex1 TO gt_ex1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*gs_ex1-bukrs = '1000'.</font>
+<font color ="#0000FF">*gs_ex1-belnr = '0010000005'.</font>
+<font color ="#0000FF">*gs_ex1-gjahr = '2025'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*gs_ex1-waers = 'USD'.</font>
+<font color ="#0000FF">*APPEND gs_ex1 TO gt_ex1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*UPDATE zcl1bkpf25 FROM gs_ex1.</font>
+
+<font color ="#0000FF">*********SELECT# ##</font>
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_ex1
+  FROM zcl1bkpf25
+ WHERE bukrs EQ '1000'
+   AND belnr EQ '0010000004'
+   AND gjahr EQ '2025'.
+
+gs_ex1-waers = 'EUR'.
+
+APPEND gs_ex1 TO gt_ex1.
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_ex1
+  FROM zcl1bkpf25
+ WHERE bukrs EQ '1000'
+   AND belnr EQ '0010000005'
+   AND gjahr EQ '2025'.
+
+gs_ex1-waers = 'USD'.
+
+APPEND gs_ex1 TO gt_ex1.
+
+UPDATE zcl1bkpf25 from table gt_ex1.
+
+
+
+
+
+<font color ="#0000FF">*5#</font>
+CLEAR : gs_ex1, gt_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000001'.
+gs_ex1-gjahr = '2025'.
+
+DELETE zcl1bkpf25 FROM gs_ex1.
+
+
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**6#</font>
+<font color ="#0000FF">*CLEAR : gs_ex1, gt_ex1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*gs_ex1-bukrs = '1000'.</font>
+<font color ="#0000FF">*gs_ex1-belnr = '0010000000'.</font>
+<font color ="#0000FF">*gs_ex1-gjahr = '2025'.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*gs_ex1-budat = '20250115'.</font>
+<font color ="#0000FF">*APPEND gs_ex1 TO gt_ex1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*CLEAR gs_ex1.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**SELECT SINGLE *</font>
+<font color ="#0000FF">**  INTO CORRESPONDING FIELDS OF gs_ex1</font>
+<font color ="#0000FF">**  FROM zcl1bkpf25</font>
+<font color ="#0000FF">** WHERE bukrs  EQ '1000'</font>
+<font color ="#0000FF">**   AND belnr  EQ '0010000005'.</font>
+<font color ="#0000FF">**</font>
+<font color ="#0000FF">**gs_ex1-bukrs = '1000'.</font>
+<font color ="#0000FF">**gs_ex1-belnr = '0010000006'.</font>
+<font color ="#0000FF">**gs_ex1-gjahr = '2025'.</font>
+<font color ="#0000FF">**APPEND gs_ex1 TO gt_ex1.</font>
+<font color ="#0000FF">**</font>
+<font color ="#0000FF">**MODIFY zcl1bkpf25 FROM TABLE gt_ex1.</font>
+<font color ="#0000FF">*</font>
+
+<font color ="#0000FF">******SELECT# ##</font>
+CLEAR : gs_ex1, gt_ex1.
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_ex1
+  FROM zcl1bkpf25
+ WHERE bukrs  EQ '1000'
+   AND belnr  EQ '0010000000'
+   AND gjahr  EQ '2025'.
+
+gs_ex1-budat = '20250115'.
+APPEND gs_ex1 TO gt_ex1.
+
+SELECT SINGLE *
+  INTO CORRESPONDING FIELDS OF gs_ex1
+  FROM zcl1bkpf25
+ WHERE bukrs  EQ '1000'
+   AND belnr  EQ '0010000005'
+   AND gjahr  EQ '2025'.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000006'.
+gs_ex1-gjahr = '2025'.
+APPEND gs_ex1 TO gt_ex1.
+
+
+MODIFY zcl1bkpf25 FROM TABLE gt_ex1.
+
+IF sy-subrc = 0.
+  WRITE: / 'Update successful.'.
+ELSE.
+  WRITE: / 'Update failed.'.
+ENDIF.
+
+IF sy-subrc EQ 0.
+  COMMIT WORK.
+ELSE.
+  ROLLBACK WORK.
+ENDIF.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

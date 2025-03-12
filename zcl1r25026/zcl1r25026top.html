@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25026TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25026TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25026TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25026TOP                            - Report ZCL1R25026</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25026 MESSAGE-ID zcl1msg25.
+
+TABLES : bkpf, bseg, skat, tgsbt.
+
+DATA : BEGIN OF gs_data,
+         bukrs TYPE bkpf-bukrs,
+         belnr TYPE bkpf-belnr,
+         gjahr TYPE bkpf-gjahr,
+         buzei TYPE bseg-buzei,
+         bktxt TYPE bkpf-bktxt,
+         hkont TYPE bseg-hkont,
+         txt50 TYPE skat-txt50,
+         gsber TYPE bseg-gsber,
+         gtext TYPE tgsbt-gtext,
+         shkzg TYPE bseg-shkzg,
+         sgtxt TYPE bseg-sgtxt,
+       END OF gs_data,
+       gt_data LIKE TABLE OF gs_data.
+
+DATA : gs_text    TYPE skat,
+       gt_text    TYPE TABLE OF skat,
+       gs_backup  LIKE skat,
+       gt_backup  LIKE TABLE OF skat,
+       gs_text2   TYPE tgsbt,
+       gt_text2   TYPE TABLE OF tgsbt,
+       gs_backup2 LIKE tgsbt,
+       gt_backup2 LIKE TABLE OF tgsbt.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

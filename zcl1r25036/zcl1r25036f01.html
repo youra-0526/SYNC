@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25036F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25036F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25036F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25036F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init_data .
+
+<font color ="#0000FF">*-- Airline code</font>
+  pa_carr = 'LH'.
+
+<font color ="#0000FF">*-- Connection number</font>
+  so_conn-sign   = 'I'.
+  so_conn-option = 'BT'.
+  so_conn-low    = '0400'.
+  so_conn-high   = '0800'.
+  APPEND so_conn.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_base_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_base_data .
+
+  CLEAR : gt_body, gs_body.
+  SELECT a~carrid connid carrname cityfrom cityto url
+    INTO CORRESPONDING FIELDS OF TABLE gt_body
+    FROM scarr AS a INNER JOIN spfli AS b
+      ON a~carrid EQ b~carrid
+   WHERE a~carrid EQ pa_carr
+     AND connid   IN so_conn.
+
+  IF gt_body IS INITIAL.
+    MESSAGE s005 DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_flight_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_flight_data .
+  "sub table## main table# ### ## data# ## #### #
+  "itab # db table# join# s4hana### #####
+  "For all entries ## ### ## R3### itab# ## data## #### ### ####
+
+<font color ="#0000FF">*-- Sub data# Parameter ### #### ### ##</font>
+  CLEAR : gt_sflight.
+  SELECT carrid connid fldate currency seatsmax seatsocc
+    INTO CORRESPONDING FIELDS OF TABLE gt_sflight
+    FROM sflight
+   WHERE carrid EQ pa_carr
+     AND connid IN so_conn.
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">*-- R3 System# ## ### ## DB Table & Itab# #### ##</font>
+<font color ="#0000FF">*-- ### ### ## Backup table# ###</font>
+<font color ="#0000FF">*-- #### #### sort# # #### #####</font>
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">*  DATA : lt_backup LIKE TABLE OF gs_body.</font>
+
+<font color ="#0000FF">*  lt_backup = gt_body.</font>
+<font color ="#0000FF">*  SORT lt_backup BY carrid connid ASCENDING.</font>
+<font color ="#0000FF">*  DELETE ADJACENT DUPLICATES FROM lt_backup COMPARING carrid connid.</font>
+
+  CLEAR gt_sflight.
+  SELECT carrid connid fldate currency seatsmax seatsocc
+    INTO CORRESPONDING FIELDS OF TABLE gt_sflight
+    FROM sflight
+    FOR ALL ENTRIES IN gt_body
+    "gt_body ## ## ## entries# #### ## gt_body(main table)# gt_sflight(sub table)# ##### #### pk# #### ### #### ##
+    WHERE carrid EQ gt_body-carrid
+      AND connid EQ gt_body-connid.
+
+<font color ="#0000FF">**********************************************************************</font>
+<font color ="#0000FF">*-- S4hana system### DB Table & ITAB## INNER JOIN# ####</font>
+<font color ="#0000FF">*-- #, ## ## JOIN## ### NEW SQL Syntax# ######</font>
+<font color ="#0000FF">**********************************************************************</font>
+  CLEAR gt_sflight.
+
+  SELECT a~carrid, a~connid, fldate, currency, seatsmax, seatsocc
+    FROM sflight AS a INNER JOIN @gt_body AS b
+      ON a~carrid EQ b~carrid
+     AND a~connid EQ b~connid
+    INTO CORRESPONDING FIELDS OF TABLE @gt_sflight.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_display_body</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_display_body .
+<font color ="#0000FF">*********************************************************************</font>
+<font color ="#0000FF">*--1 sflight data# currency# 'EUR'## gs_body-status# icon# ##</font>
+<font color ="#0000FF">*--2 sflight# currency# ## gs_body_country# #### ##</font>
+<font color ="#0000FF">*--3 Currency# 'JPY'# ####</font>
+<font color ="#0000FF">*********************************************************************</font>
+  DATA : lv_tabix TYPE sy-tabix, "loop# ## main table# data# ### #
+         lv_cnt   TYPE i.
+  DATA : lt_backup LIKE gt_sflight.
+
+  lt_backup = gt_sflight.
+
+  SORT lt_backup BY carrid connid ASCENDING.
+  DELETE ADJACENT DUPLICATES FROM lt_backup COMPARING carrid connid.
+
+  LOOP AT gt_body INTO gs_body.
+
+    lv_tabix = sy-tabix.
+
+<font color ="#0000FF">*-- Get SFLIGHT data</font>
+    "#### ####### #### sflight# ## ### main table# sflight# pk# #### ######
+    CLEAR gs_sflight.
+    READ TABLE lt_backup INTO gs_sflight WITH KEY carrid = gs_body-carrid
+                                                   connid = gs_body-connid
+                                                   BINARY SEARCH.
+    IF sy-subrc EQ 0.
+      CASE gs_sflight-currency. "sflight# ## #### #### ##
+        WHEN 'EUR'.
+          gs_body-status =  icon_led_green.
+          gs_body-country = 'Europe'.
+        WHEN 'USD'.
+          gs_body-country = 'America'.
+        WHEN 'JPY'.
+          DELETE gt_body INDEX lv_tabix.
+          CONTINUE.   "continue# ## loop# ## index# ####
+        WHEN OTHERS.
+          gs_body-country = 'Other Country'.
+      ENDCASE.
+
+      MODIFY gt_body FROM gs_body INDEX lv_tabix
+                                  TRANSPORTING status country.
+    ENDIF.
+
+  ENDLOOP.
+<font color ="#0000FF">*-- Message Display</font>
+  lv_cnt = lines( gt_body ).
+  MESSAGE s003 WITH lv_cnt.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_screen .
+
+  DATA : ls_variant TYPE disvariant.
+
+  IF go_container IS NOT BOUND.
+    "not bound : instance ## ### -&gt; container# bound## ####
+    "screen# ### ### ## ### #### #### ### ### #
+    CLEAR : gt_fcat, gs_fcat.
+<font color ="#0000FF">*    PERFORM set_field_catalog.      "Key Fiedlname   Ref_tab   Just   Emphasize</font>
+    PERFORM set_field_catalog2 USING : 'X' 'STATUS'     ' '       'C'      ' ',
+                                       'X' 'CARRID'     'SCARR'   'C'      ' ',
+                                       'X' 'CONNID'     'SPFLI'   'C'      ' ',
+                                       ' ' 'CARRNAME'   'SCARR'   ' '      'X',
+                                       ' ' 'CITYFROM'   'SPFLI'   ' '      ' ',
+                                       ' ' 'CITYTO'     'SPFLI'   ' '      ' ',
+                                       ' ' 'URL'        'SCARR'   ' '      'X',
+                                       ' ' 'COUNTRY'     ' '      ' '      ' '.
+
+    PERFORM create_object.
+    PERFORM set_layout.
+
+    ls_variant-report = sy-repid.
+    ls_variant-handle = 'ALV1'.
+
+    CALL METHOD go_alv_grid-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = ls_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layout
+      CHANGING
+        it_outtab       = gt_body
+        it_fieldcatalog = gt_fcat. "field catalog(gt_fcat)# ### ## ### ####### itab(gt_body)# ## ### ## ###### (### ####)
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_catalog .
+
+  gs_fcat-key       = abap_true."pk# ##, # ## #### ## ### key### #### #### #### ### ### ## # ## ##
+  gs_fcat-fieldname = 'STATUS'.
+  gs_fcat-coltext   = TEXT-c01.  "Status
+  gs_fcat-just      = 'C'.      "#### =&gt; C : Center, R : Right, L : Left (###/#/# ##)
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.  "gs_# clear### ####
+  gs_fcat-key       = abap_true.
+  gs_fcat-fieldname = 'CARRID'.
+  gs_fcat-coltext   = 'Airline'.
+  gs_fcat-just      = 'C'.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-key       = abap_true.
+  gs_fcat-fieldname = 'CONNID'.
+  gs_fcat-coltext   = 'Connection'.
+  gs_fcat-just      = 'C'.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = 'CARRNAME'.
+  gs_fcat-coltext   = 'Airline Name'.
+  gs_fcat-emphasize = abap_true.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = 'CITYFROM'.
+  gs_fcat-coltext   = 'Cityfrom'.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = 'CITYTO'.
+  gs_fcat-coltext   = 'Cityto'.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = 'URL'.
+  gs_fcat-coltext   = 'URL'.
+  gs_fcat-emphasize = abap_true.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = 'COUNTRY'.
+  gs_fcat-coltext   = 'Country'.
+  APPEND gs_fcat TO gt_fcat.
+
+  CLEAR gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_object .
+
+  CREATE OBJECT go_container
+    EXPORTING
+      side      = go_container-&gt;dock_at_left
+      extension = 5000.
+  CREATE OBJECT go_alv_grid
+    EXPORTING
+      i_parent = go_container.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layout .
+
+  gs_layout-zebra      = abap_true.
+  gs_layout-cwidth_opt = abap_true.
+  gs_layout-sel_mode   = 'D'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_catalog2</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_catalog2  USING pv_key pv_field pv_table pv_just pv_emph.
+  gs_fcat-key           = pv_key.   "PK
+  gs_fcat-fieldname     = pv_field. "Field name
+  gs_fcat-ref_table     = pv_table. "Reference table(DDIC Ref)
+  gs_fcat-just          = pv_just.  "Just
+  gs_fcat-emphasize     = pv_emph.  "Emphasize
+<font color ="#0000FF">*  gs_fcat-coltext       = pv_colt.  "Coltext "##### ## #</font>
+
+  CASE pv_field. "##### ### ### ### #### case### ### # ##
+    WHEN 'STATUS'.
+      gs_fcat-coltext = 'Status'.
+    WHEN 'COUNTRY'.
+      gs_fcat-coltext = 'Country'.
+  ENDCASE.
+
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR gs_fcat.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

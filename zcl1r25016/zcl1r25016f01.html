@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25016F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25016F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25016F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25016F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init_value</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init_value .
+
+<font color ="#0000FF">*--String seperate</font>
+  pa_year  = sy-datum(4).
+  pa_month = sy-datum+4(2).
+  pa_day   = sy-datum+6(2).
+
+<font color ="#0000FF">*--Parameters</font>
+  pa_bukrs = '0001'.
+  "string ### #
+  pa_gstrp = sy-datum.
+
+<font color ="#0000FF">*--Select-Options</font>
+  CLEAR : so_matnr, so_matnr[].
+  so_matnr-sign   = 'I'.
+  so_matnr-option = 'BT'.
+  so_matnr-low    = 'C7HSA'.
+  so_matnr-high   = 'GTX9A-BS'.
+  APPEND so_matnr.
+
+  CLEAR : so_werks, so_werks[].
+  so_werks-sign   = 'I'.
+  so_werks-option = 'EQ'.
+  so_werks-low    = '0001'.
+  APPEND so_werks.
+
+  CLEAR : so_werks.
+  so_werks-sign   = 'I'.
+  so_werks-option = 'EQ'.
+  so_werks-low    = '0003'.
+  APPEND so_werks.
+
+  CLEAR : so_werks.
+  so_werks-sign   = 'I'.
+  so_werks-option = 'EQ'.
+  so_werks-low    = '1010'.
+  APPEND so_werks.
+
+  CLEAR : so_werks.
+  so_werks-sign   = 'I'.
+  so_werks-option = 'EQ'.
+  so_werks-low    = '1020'.
+  APPEND so_werks.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form check_param</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM check_param .
+<font color ="#0000FF">*  "##### #### ### #### ## ##</font>
+<font color ="#0000FF">**--Check company code</font>
+<font color ="#0000FF">*  CLEAR gv_bukrs.</font>
+<font color ="#0000FF">*  SELECT SINGLE bukrs INTO (gv_bukrs)</font>
+<font color ="#0000FF">*    FROM t001</font>
+<font color ="#0000FF">*  WHERE bukrs EQ pa_bukrs.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  IF sy-subrc NE 0.</font>
+<font color ="#0000FF">*    "text symbol# #### ##### ### text# ###</font>
+<font color ="#0000FF">*    MESSAGE s001 WITH pa_bukrs TEXT-e01 DISPLAY LIKE 'E'.</font>
+<font color ="#0000FF">*    "### ##### #### ### ### ##</font>
+<font color ="#0000FF">*    STOP.</font>
+<font color ="#0000FF">*  ENDIF.</font>
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_base_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_data .
+<font color ="#0000FF">*  "Main table data## : selection screen## ### #### ##### ##</font>
+<font color ="#0000FF">*  SELECT bukrs gstrp matnr werks gamng gmein plnum aufnr rueck</font>
+<font color ="#0000FF">*    INTO CORRESPONDING FIELDS OF TABLE gt_pp</font>
+<font color ="#0000FF">*    FROM ztcl1pp_25</font>
+<font color ="#0000FF">*   WHERE bukrs EQ pa_bukrs</font>
+<font color ="#0000FF">*     AND gstrp EQ pa_gstrp</font>
+<font color ="#0000FF">*     AND matnr IN so_matnr</font>
+<font color ="#0000FF">*  AND werks IN so_werks.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  IF gt_pp IS INITIAL.</font>
+<font color ="#0000FF">*    MESSAGE s004 DISPLAY LIKE 'E'.</font>
+<font color ="#0000FF">*    STOP.</font>
+<font color ="#0000FF">*  ELSE.</font>
+<font color ="#0000FF">*    MESSAGE s003 WITH sy-dbcnt.</font>
+<font color ="#0000FF">*  ENDIF.</font>
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_text_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_text_data .
+  "Sub table data##
+  SELECT werks name1 bwkey kunnr lifnr fabkl
+    INTO CORRESPONDING FIELDS OF TABLE gt_text
+    FROM t001w
+   WHERE spras = sy-langu.
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form make_display_body</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM make_display_body .
+<font color ="#0000FF">*    gt_backup = gt_text.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  "Binary Search</font>
+<font color ="#0000FF">*  SORT gt_backup BY werks ASCENDING.</font>
+<font color ="#0000FF">*  DELETE ADJACENT DUPLICATES FROM gt_backup COMPARING werks.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**--Make display body</font>
+<font color ="#0000FF">*  LOOP AT gt_pp INTO gs_pp.</font>
+<font color ="#0000FF">*    "itab# index# gv_tabix### ### #. ### # ## index## #### ##</font>
+<font color ="#0000FF">*    gv_tabix = sy-tabix.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">**--Get plant name</font>
+<font color ="#0000FF">*    CLEAR gs_backup.</font>
+<font color ="#0000FF">*    "itab## # # #####.(wa# ####) with key~# #### ####</font>
+<font color ="#0000FF">*    "werks(####) - name1(##### ## text field.)</font>
+<font color ="#0000FF">*    "gt_backup table# data# gs_backup# ###. gt_backup-werks = gs_backu</font>
+<font color ="#0000FF">*    READ TABLE gt_backup INTO gs_backup WITH KEY werks = gs_pp-werks</font>
+<font color ="#0000FF">*                                        BINARY SEARCH.</font>
+<font color ="#0000FF">*    IF sy-subrc = 0.</font>
+<font color ="#0000FF">*      gs_pp-name1 = gs_backup-name1.</font>
+<font color ="#0000FF">*    ENDIF.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    IF ( gs_pp-matnr = 'MEGA_125' OR gs_pp-matnr = 'XQ125' ).</font>
+<font color ="#0000FF">*      gs_pp-remark = 'KG'.</font>
+<font color ="#0000FF">*    ENDIF.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    MODIFY gt_pp FROM gs_pp INDEX gv_tabix.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  ENDLOOP.</font>
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

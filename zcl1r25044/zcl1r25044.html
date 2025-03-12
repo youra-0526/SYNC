@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25044</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25044</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  0212 ##2</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25044</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zcl1r25044top.html">zcl1r25044top</a>.  " Global Data
+
+include <a href ="zcl1r25044s01.html">zcl1r25044s01</a>.  " Selection Screen
+include <a href ="zcl1r25044c01.html">zcl1r25044c01</a>.  " Class
+include <a href ="zcl1r25044o01.html">zcl1r25044o01</a>.  " PBO-Modules
+include <a href ="zcl1r25044i01.html">zcl1r25044i01</a>.  " PAI-Modules
+include <a href ="zcl1r25044f01.html">zcl1r25044f01</a>.  " FORM-Routines
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Start-of-Selection</font>
+<font color ="#0000FF">*************************************</font>
+START-OF-SELECTION.
+  PERFORM get_main_data.
+  PERFORM set_main_logic.
+
+  CALL SCREEN 100.
+
+<font color ="#0000FF">*GUI Texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* TITLE100 --&gt; ALV!!!!!!!</font>
+<font color ="#0000FF">* TITLE110 --&gt; Popup ###</font>
+<font color ="#0000FF">* TITLE120 --&gt; Popup 2###!!</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_CARR D       .</font>
+<font color ="#0000FF">* SO_CONN D       .</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

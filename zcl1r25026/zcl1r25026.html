@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25026</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25026</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] 20250131 ##</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25026</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zcl1r25026top.html">zcl1r25026top</a>.  " Global Data
+
+include <a href ="zcl1r25026s01.html">zcl1r25026s01</a>.  " Selection Screen
+include <a href ="zcl1r25026f01.html">zcl1r25026f01</a>.  " FORM-Routines
+
+
+INITIALIZATION.
+  PERFORM set_init_data.
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM modify_screen.
+
+START-OF-SELECTION.
+  PERFORM get_main_data.
+  PERFORM get_sub_data.
+  PERFORM get_sub2_data.
+  PERFORM set_data_value.
+
+  cl_demo_output=&gt;display( gt_data ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* E01 No data found!</font>
+<font color ="#0000FF">* S01 ## #######.</font>
+<font color ="#0000FF">* T01 Condition</font>
+<font color ="#0000FF">* T02 Sub Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BUKRS D       .</font>
+<font color ="#0000FF">* PA_EDIT         Edit mode</font>
+<font color ="#0000FF">* PA_GJAHR D       .</font>
+<font color ="#0000FF">* PA_READ         Read mode</font>
+<font color ="#0000FF">* RD1         Read mode</font>
+<font color ="#0000FF">* RD2         Edit mode</font>
+<font color ="#0000FF">* SO_BUDT D       .</font>
+<font color ="#0000FF">* SO_HKON D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZCL1MSG25</font>
+<font color ="#0000FF">*001   & &</font>
+<font color ="#0000FF">*005   No data found!!</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

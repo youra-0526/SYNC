@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25045F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25045F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25045F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25045F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form double_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_ROW</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_double_click  USING    pv_row
+                                   pv_column.
+
+  CLEAR : gs_mara.
+  READ TABLE gt_mara INTO gs_mara INDEX pv_row.
+
+  CLEAR : gt_marc.
+  SELECT matnr werks pstat ekgrp dismm
+    INTO CORRESPONDING FIELDS OF TABLE gt_marc
+    FROM marc
+   WHERE matnr EQ gs_mara-matnr.
+
+  CALL SCREEN 110 STARTING AT 05 10.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_main_logic</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_main_data .
+
+  CLEAR : gt_mara.
+  SELECT matnr ersda vpsta mtart matkl brgew ntgew gewei spart
+    INTO CORRESPONDING FIELDS OF TABLE gt_mara
+    FROM mara
+   WHERE matnr IN so_matn.
+
+  IF sy-subrc NE 0.
+    MESSAGE e001 DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_hotspot_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_ROW_ID</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN_ID</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_hotspot_click  USING    pv_row_id
+                                    pv_column_id.
+
+  CLEAR : gs_mara.
+  READ TABLE gt_mara INTO gs_mara INDEX pv_row_id.
+
+  SET PARAMETER ID : 'NAT' FIELD gs_mara-matnr.
+
+  CALL TRANSACTION 'MM03' AND SKIP FIRST SCREEN.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_main_logic</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_main_logic .
+
+  DATA : lv_tabix TYPE sy-tabix,
+         lv_cnt   TYPE i,
+         ls_scol  TYPE lvc_s_scol.
+
+  LOOP AT gt_mara INTO gs_mara.
+
+    lv_tabix = sy-tabix.
+
+    CLEAR : ls_scol, gs_mara-color.
+
+    CASE gs_mara-vpsta.
+      WHEN 'KVX'.
+        ls_scol-fname      = 'MATNR'.
+        ls_scol-color-col  = 2.
+        ls_scol-color-int  = 1.
+        INSERT ls_scol INTO TABLE gs_mara-color.
+
+        CLEAR ls_scol.
+      WHEN 'KV'.
+        ls_scol-color-col  = 3.
+        ls_scol-color-int  = 1.
+        INSERT ls_scol INTO TABLE gs_mara-color.
+
+        CLEAR ls_scol.
+    ENDCASE.
+
+
+    READ TABLE gt_matkl INTO gs_matkl WITH KEY matkl = gs_mara-matkl.
+    IF sy-subrc EQ 0.
+      gs_mara-wgbez = gs_matkl-wgbez.
+    ENDIF.
+
+    READ TABLE gt_spart INTO gs_spart WITH KEY spart = gs_mara-spart.
+    IF sy-subrc EQ 0.
+      gs_mara-vtext = gs_spart-vtext.
+    ENDIF.
+
+    MODIFY gt_mara FROM gs_mara INDEX lv_tabix
+                                TRANSPORTING wgbez vtext color.
+
+  ENDLOOP.
+
+  lv_cnt = lines( gt_mara ).
+
+  IF gt_mara IS INITIAL.
+    MESSAGE e001 WITH TEXT-e01.
+  ELSE.
+    MESSAGE s001 WITH lv_cnt TEXT-s01.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_sub_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_sub_data .
+
+  CLEAR : gt_matkl.
+  SELECT matkl wgbez
+    INTO CORRESPONDING FIELDS OF TABLE gt_matkl
+    FROM t023t
+   WHERE spras EQ sy-langu.
+
+  CLEAR : gt_spart.
+  SELECT spart vtext
+    INTO CORRESPONDING FIELDS OF TABLE gt_spart
+    FROM tspat
+   WHERE spras EQ sy-langu.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_screen .
+
+  DATA : ls_variant TYPE disvariant.
+
+  IF go_container IS INITIAL.
+
+    CLEAR : gs_fcat, gt_fcat.
+    PERFORM set_field_catalog USING : 'X' 'MATNR' 'MARA'  ' ' ' ',
+                                      ' ' 'ERSDA' 'MARA'  'C' ' ',
+                                      ' ' 'VPSTA' 'MARA'  ' ' ' ',
+                                      ' ' 'MTART' 'MARA'  ' ' ' ',
+                                      ' ' 'MATKL' 'MARA'  ' ' ' ',
+                                      ' ' 'WGBEZ' 'T023T' ' ' 'X',
+                                      ' ' 'BRGEW' 'MARA'  ' ' ' ',
+                                      ' ' 'NTGEW' 'MARA'  ' ' ' ',
+                                      ' ' 'GEWEI' 'MARA'  'C' ' ',
+                                      ' ' 'SPART' 'MARA'  'C' ' ',
+                                      ' ' 'VTEXT' 'TSPAT' ' ' 'X'.
+
+    PERFORM set_layout.
+    PERFORM create_object.
+
+    ls_variant-report = sy-repid.
+    ls_variant-handle = 'ALV1'.
+
+    SET HANDLER : go_event-&gt;double_click  FOR go_alv_grid,
+                  go_event-&gt;hotspot_click FOR go_alv_grid.
+
+    CALL METHOD go_alv_grid-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = ls_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layout
+      CHANGING
+        it_outtab       = gt_mara
+        it_fieldcatalog = gt_fcat
+        it_sort         = gt_sort.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_field_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_field_catalog USING : pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-ref_table = pv_table.
+  gs_fcat-just      = pv_just.
+  gs_fcat-emphasize = pv_emph.
+  CASE pv_field.
+    WHEN 'MATNR'.
+      gs_fcat-hotspot = abap_true.
+    WHEN 'BRGEW'.
+      gs_fcat-qfieldname = 'GEWEI'.
+    WHEN 'NTGEW'.
+      gs_fcat-qfieldname = 'GEWEI'.
+  ENDCASE.
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR gs_fcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_layout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layout .
+
+  gs_layout-zebra      = abap_true.
+  gs_layout-cwidth_opt = abap_true.
+  gs_layout-sel_mode   = 'D'.
+  gs_layout-ctab_fname = 'COLOR'.
+  gs_sort-fieldname    = 'MATNR'.
+  gs_sort-up           = abap_true.
+  gs_layout-grid_title = 'ALV TITLE##'.
+  gs_layout-smalltitle = abap_true.
+  APPEND gs_sort TO gt_sort.
+  CLEAR gs_sort.
+
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_object .
+
+  CREATE OBJECT go_container
+    EXPORTING
+      side      = go_container-&gt;dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT go_alv_grid
+    EXPORTING
+      i_parent = go_container.
+
+  CREATE OBJECT go_event.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_popup_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_popup_screen .
+
+  DATA ls_variant TYPE disvariant.
+
+  IF go_pop_cont1 IS INITIAL.
+
+    CLEAR : gs_pfcat1, gt_pfcat1.
+    PERFORM set_pop_catalog USING : 'X' 'MATNR' 'MARC' 'C' ' ',
+                                    'X' 'WERKS' 'MARC' 'C' ' ',
+                                    ' ' 'PSTAT' 'MARC' 'C' ' ',
+                                    ' ' 'EKGRP' 'MARC' 'C' ' ',
+                                    ' ' 'DISMM' 'MARC' 'C' ' '.
+
+    PERFORM set_playout.
+    PERFORM create_pop_object.
+
+    ls_variant-report    = sy-repid.
+    ls_variant-handle    = 'POP1'.
+
+    CALL METHOD go_pop_grid1-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = ls_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_playout1
+      CHANGING
+        it_outtab       = gt_marc
+        it_fieldcatalog = gt_pfcat1.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_pop_catalog</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_pop_catalog USING pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_pfcat1-key       = pv_key.
+  gs_pfcat1-fieldname = pv_field.
+  gs_pfcat1-ref_table = pv_table.
+  gs_pfcat1-just      = pv_just.
+  gs_pfcat1-emphasize = pv_emph.
+  APPEND gs_pfcat1 TO gt_pfcat1.
+  CLEAR gs_pfcat1.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_playout</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_playout .
+
+  gs_playout1-zebra      = abap_true.
+  gs_playout1-cwidth_opt = abap_true.
+  gs_playout1-sel_mode   = 'D'.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_pop_object</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_pop_object .
+
+  CREATE OBJECT go_pop_cont1
+    EXPORTING
+      container_name = 'POP_CONT'.
+
+  CREATE OBJECT go_pop_grid1
+    EXPORTING
+      i_parent = go_pop_cont1.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

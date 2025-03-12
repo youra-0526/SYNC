@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25014</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25014</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [1st test] Open SQL ##</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25014</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25014 MESSAGE-ID zclmsg25.
+
+"Select-options# mara table# #### ##
+TABLES : mara.
+
+"Main table# Structure(wa, itab)# ##
+DATA : BEGIN OF gs_material,
+         matnr TYPE mara-matnr,
+         ersda TYPE mara-ersda,
+         vpsta TYPE mara-vpsta,
+         pstat TYPE mara-pstat,
+         mtart TYPE mara-mtart,
+         mtbez TYPE t134t-mtbez,
+         ntgew TYPE mara-ntgew,
+         gewei TYPE mara-gewei,
+       END OF gs_material,
+       gt_material LIKE TABLE OF gs_material.
+"Sub table# Structure(wa, itab)# ##
+DATA : gs_ttable TYPE t134t,
+       gt_ttable TYPE TABLE OF t134t,
+       "backup table# Structure(wa, itab)# ##, ## #### table# Main table### ##, Sub table### ##
+       gs_backup TYPE t134t,
+       gt_backup TYPE TABLE OF t134t.
+
+"sy-tabix: ##### ## itab# index ### #### ### ##
+DATA : gv_tabix TYPE sy-tabix.
+
+"Select-Options# #### so_matnr(itab)# #### ## ### ## (sign / option / low / high )
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS so_matnr FOR mara-matnr DEFAULT 'C7HSA' TO 'MEGA_125'
+                                         SIGN I OPTION BT NO-EXTENSION.
+
+SELECTION-SCREEN END OF BLOCK pa1.
+
+"### Main table# Structure(###)# data# sql### ####
+"## text table# field# #### -&gt; Sub table# #####
+SELECT matnr ersda vpsta pstat mtart ntgew gewei
+  INTO CORRESPONDING FIELDS OF TABLE gt_material
+  FROM mara
+ WHERE matnr IN so_matnr.
+
+"Main table# data# sql# ####, data# ## ### #### loop## ##
+"Main data# select# ##### ## ### ##### ### data# ### ######, stop# ## #
+IF gt_material IS INITIAL.
+  MESSAGE s004 DISPLAY LIKE 'E'.
+  STOP.
+ELSE.
+  MESSAGE s003 WITH sy-dbcnt.
+ENDIF.
+
+"### Sub table# Structure(###)# data# sql### ####
+"text table# data# ### #, ## #### #### ###### ##
+SELECT mtart mtbez "text table# ## ## ##(### ##)
+  INTO CORRESPONDING FIELDS OF TABLE gt_ttable
+  FROM t134t
+ WHERE spras = sy-langu.
+
+
+"#### : data# #### ### #### ## ###
+"binary search
+gt_backup = gt_ttable.
+
+"binary searh# #### (##, ### ### #####)
+SORT gt_backup BY mtart ASCENDING.
+DELETE ADJACENT DUPLICATES FROM gt_backup COMPARING mtart.
+
+"itab# ### text data# ## loop
+"loop## ### gs_# data# ### gt_# #### # (### #### ##, ### ## index# ####)
+LOOP AT gt_material INTO gs_material.
+
+  gv_tabix = sy-tabix.
+
+  "### gs_# ### (data# ## #####, #####)
+  CLEAR gs_backup.
+  "### itab# data# ### wa# ###. Main table# Sub table# ## field# ###
+  READ TABLE gt_backup INTO gs_backup WITH KEY mtart = gs_material-mtart "main table# sub table# ##### ### ### #
+                                      BINARY SEARCH.
+  "### #### ###, ## ### #####, ## #### wa# ## text table# text field# ## Main table wa# text table# text field# ### ##
+  IF sy-subrc EQ 0.
+    gs_material-mtbez = gs_backup-mtbez.
+  ENDIF.
+
+  "Main table# wa## ### ### index# ## mtbex(text table# ###)# ### ##
+  MODIFY gt_material FROM gs_material INDEX gv_tabix TRANSPORTING mtbez.
+
+ENDLOOP.
+
+
+
+
+cl_demo_output=&gt;display( gt_material ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZCLMSG25</font>
+<font color ="#0000FF">*003   & ## ## #####.</font>
+<font color ="#0000FF">*004   ### Data# ####.</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

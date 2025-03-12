@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25023TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25023TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25023TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25023TOP                            - Report ZCL1R25023</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25023.
+
+TABLES : scustom, sbuspart.
+
+DATA : BEGIN OF gs_body,
+         id                TYPE scustom-id,
+         name              TYPE scustom-name,
+         contact           TYPE sbuspart-contact,
+         contphono         TYPE sbuspart-contphono,
+         buspatyp          TYPE sbuspart-buspatyp,
+         form              TYPE scustom-form,
+         street            TYPE scustom-street,
+         custtype          TYPE scustom-custtype,
+         custtype_desc(20),
+       END OF gs_body,
+       gt_body LIKE TABLE OF gs_body.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

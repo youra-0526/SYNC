@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25042TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25042TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25042TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25042TOP                            - Report ZCL1R25042</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25042 MESSAGE-ID zcl1msg25.
+
+CLASS lcl_event_handler DEFINITION DEFERRED.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : bkpf, bseg.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class Instance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_container TYPE REF TO cl_gui_docking_container,
+       go_alv_grid  TYPE REF TO cl_gui_alv_grid.
+
+DATA : go_event TYPE REF TO lcl_event_handler.
+
+<font color ="#0000FF">*-- For popup</font>
+DATA : go_pop_cont TYPE REF TO cl_gui_custom_container,
+       go_pop_grid TYPE REF TO cl_gui_alv_grid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+DATA : BEGIN OF gs_docu,
+         bukrs TYPE bkpf-bukrs,
+         belnr TYPE bkpf-belnr,
+         gjahr TYPE bkpf-gjahr,
+         buzei TYPE bseg-buzei,
+         bktxt TYPE bkpf-bktxt,
+         mwskz TYPE bseg-mwskz,
+         text1 TYPE t007s-text1,
+         kostl TYPE bseg-kostl,
+         ktext TYPE cskt-ktext,
+         sgtxt TYPE bseg-sgtxt,
+         shkzg TYPE bseg-shkzg,
+         wrbtr TYPE bseg-wrbtr,
+         waers TYPE bkpf-waers,
+       END OF gs_docu,
+       gt_docu LIKE TABLE OF gs_docu.
+
+DATA : gs_tax  TYPE t007s,      "### table# ## itab# wa
+       gt_tax  TYPE TABLE OF t007s,
+       gs_cctr TYPE cskt,
+       gt_cctr TYPE TABLE OF cskt.
+
+DATA : BEGIN OF gs_item,        "### ## itab# wa
+         bukrs TYPE bseg-bukrs,
+         belnr TYPE bseg-belnr,
+         gjahr TYPE bseg-gjahr,
+         buzei TYPE bseg-buzei,
+         shkzg TYPE bseg-shkzg,
+         wrbtr TYPE bseg-wrbtr, "######
+         pswsl TYPE bseg-pswsl, "########
+       END OF gs_item,
+       gt_item LIKE TABLE OF gs_item.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* For Main ALV</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gs_layout  TYPE lvc_s_layo,  "####### layout# #### ### popup #### ##### ##
+       gs_fcat    TYPE lvc_s_fcat,
+       gt_fcat    TYPE lvc_t_fcat,  "## ### data# ### ## ### itab### #### #
+       gs_sort    TYPE lvc_s_sort,
+       gt_sort    TYPE lvc_t_sort,
+       gs_variant TYPE disvariant.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* For Popup ALV</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gt_pfcat   TYPE lvc_t_fcat,  "### #######
+       gs_pfcat   type lvc_s_fcat,
+       gs_playout TYPE lvc_s_layo.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gv_okcode TYPE sy-ucomm.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

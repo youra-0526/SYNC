@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25018</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25018</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Program ZCL1R25018</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25018</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25018.
+
+TABLES : stravelag, sbuspart.
+
+DATA : BEGIN OF gs_data,
+         agencynum TYPE stravelag-agencynum,
+         name      TYPE stravelag-name,
+         street    TYPE stravelag-street,
+         postcode  TYPE stravelag-postcode,
+         contact   TYPE sbuspart-contact,
+         contphono TYPE sbuspart-contphono,
+         buspatyp  TYPE sbuspart-buspatyp,
+       END OF gs_data,
+       gt_data LIKE TABLE OF gs_data.
+
+DATA : gv_tabix TYPE sy-tabix.
+
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS : so_agen FOR stravelag-agencynum.
+
+SELECTION-SCREEN END OF BLOCK pa1.
+
+
+INITIALIZATION.
+
+  CLEAR : so_agen, so_agen[].
+
+  so_agen-sign   = 'I'.
+  so_agen-option = 'EQ'.
+  so_agen-low    = '1'.
+  APPEND so_agen.
+
+  so_agen-sign   = 'I'.
+  so_agen-option = 'EQ'.
+  so_agen-low    = '5'.
+  APPEND so_agen.
+
+  so_agen-sign   = 'I'.
+  so_agen-option = 'EQ'.
+  so_agen-low    = '7'.
+  APPEND so_agen.
+
+  so_agen-sign   = 'I'.
+  so_agen-option = 'BT'.
+  so_agen-low    = '100'.
+  so_agen-high   = '1500'.
+  APPEND so_agen.
+
+START-OF-SELECTION.
+
+  SELECT agencynum name street postcode contact contphono
+  INTO CORRESPONDING FIELDS OF TABLE gt_data
+  FROM stravelag AS a INNER JOIN sbuspart AS b
+    ON a~agencynum EQ b~buspartnum.
+
+  LOOP AT gt_data INTO gs_data.
+
+    gv_tabix = sy-tabix.
+
+    CLEAR gs_data.
+    READ TABLE gt_data INTO gs_data WITH KEY contphono = gs_data-contphono.
+
+    IF gs_data-contphono IS INITIAL.
+      gs_data-buspatyp = 'FC'.
+    ELSE.
+      gs_data-buspatyp = 'TA'.
+    ENDIF.
+
+    MODIFY gt_data FROM gs_data INDEX gv_tabix TRANSPORTING buspatyp.
+
+  ENDLOOP.
+
+<font color ="#0000FF">**End-OF-SELECTION. "### ## ####. ### #. ## # ### ##</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  CALL SCREEN 100.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  cl_demo_output=&gt;display( gt_data ).</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_AGEN D       .</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

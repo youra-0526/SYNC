@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25030TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25030TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25030TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25030TOP                            - Report ZCL1R25030</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25030 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gs_scarr TYPE scarr,
+       gt_spfli TYPE ztcl1spfli25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class instance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_com25 TYPE REF TO zcl_cl1_com25. "go_ : global object## #
+
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gv_message(50).
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

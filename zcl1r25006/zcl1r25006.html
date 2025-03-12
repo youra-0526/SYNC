@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25006</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25006</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Open SQL - 2025.01.10</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25006</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25006.
+
+<font color ="#0000FF">********************************************</font>
+<font color ="#0000FF">*Internal Table and Work Area</font>
+<font color ="#0000FF">********************************************</font>
+DATA : BEGIN OF gs_spfli,
+         air_cd    TYPE spfli-carrid,
+         countryfr TYPE spfli-countryfr,
+         countryto TYPE spfli-countryto,
+       END OF gs_spfli,
+       gt_spfli LIKE TABLE OF gs_spfli.
+
+DATA : BEGIN OF gs_info,
+         air_cd   TYPE sflight-carrid,
+         con_no   TYPE sflight-connid,
+         minseats TYPE sflight-seatsocc,
+         sumseats TYPE sflight-seatsocc,
+       END OF gs_info,
+       gt_info LIKE TABLE OF gs_info.
+
+DATA : gs_scarr    TYPE scarr,
+       gv_cityfrom TYPE spfli-cityfrom,
+       gv_cityto   TYPE spfli-cityto.
+
+<font color ="#0000FF">********************************************</font>
+<font color ="#0000FF">*Get data</font>
+<font color ="#0000FF">********************************************</font>
+<font color ="#0000FF">*## ### ### ##### #### ### ### #### ##</font>
+CLEAR : gt_spfli, gs_spfli.
+SELECT carrid AS air_cd "alias# db table##### column## alias ### # ##
+       countryfr
+       countryto
+  INTO CORRESPONDING FIELDS OF TABLE gt_spfli
+  FROM spfli AS a
+ WHERE countryfr EQ a~countryto. "table join: ~# ####
+
+<font color ="#0000FF">*Group By SQL</font>
+CLEAR : gt_info, gs_info.
+SELECT carrid AS air_cd
+       connid AS con_no
+       MIN( seatsocc ) AS minseats "### ### ## ### #### ## alias# ## #
+       MAX( seatsocc ) AS maxseats
+       SUM( seatsocc ) AS sumseats
+  INTO CORRESPONDING FIELDS OF TABLE gt_info
+  FROM sflight
+ WHERE seatsocc GE 200
+  GROUP BY carrid connid "group by# ### ### select## ### ##
+  HAVING SUM( seatsocc ) &lt; 2000 "# # ## data# # ####
+  AND carrid EQ 'DL'.
+
+<font color ="#0000FF">*cl_demo_output=&gt;display( gt_info ).</font>
+
+CLEAR : gs_spfli, gs_scarr, gv_cityfrom, gv_cityto.
+SELECT SINGLE carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF gs_scarr
+  FROM scarr
+  WHERE carrid EQ 'LH'.
+
+<font color ="#0000FF">*Assign value to variable</font>
+SELECT SINGLE countryfr cityfrom cityto
+  FROM spfli
+  INTO (gs_spfli-countryfr, gv_cityfrom, gv_cityto)
+ WHERE carrid EQ 'LH'.
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*cl_demo_output=&gt;display( gs_spfli-countryfr ).</font>
+
+<font color ="#0000FF">*BREAK-POINT. "#### ### ##</font>
+
+
+
+
+<font color ="#0000FF">*******************************************</font>
+<font color ="#0000FF">*Assignment</font>
+<font color ="#0000FF">****************## 1#</font>
+
+DATA : BEGIN OF gs_ex1,
+         bukrs TYPE bkpf-bukrs,
+         belnr TYPE bkpf-belnr,
+         gjahr TYPE bkpf-gjahr,
+         buzei TYPE bseg-buzei,
+         budat TYPE bkpf-budat,
+         bktxt TYPE bkpf-bktxt,
+         wrbtr TYPE bseg-wrbtr,
+         waers TYPE bkpf-waers,
+         sgtxt TYPE bseg-sgtxt,
+       END OF gs_ex1,
+       gt_ex1 LIKE TABLE OF gs_ex1.
+
+CLEAR gs_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000007'.
+gs_ex1-gjahr = '2025'.
+gs_ex1-buzei = '0002'.
+gs_ex1-budat = sy-datum.
+gs_ex1-bktxt = 'Document header'.
+gs_ex1-wrbtr = '15000'.
+gs_ex1-waers = 'KRW'.
+gs_ex1-sgtxt = 'Line item'.
+
+APPEND gs_ex1 TO gt_ex1.
+
+CLEAR gs_ex1.
+
+gs_ex1-bukrs = '1000'.
+gs_ex1-belnr = '0010000006'.
+gs_ex1-gjahr = '2024'.
+gs_ex1-buzei = '0001'.
+gs_ex1-budat = sy-datum.
+gs_ex1-bktxt = 'Document insert header'.
+gs_ex1-wrbtr = '7000'.
+gs_ex1-waers = 'KRW'.
+gs_ex1-sgtxt = 'Line item Insert'.
+
+INSERT gs_ex1 INTO gt_ex1 INDEX 1.
+
+CLEAR gs_ex1.
+
+READ TABLE gt_ex1 INTO gs_ex1 INDEX 2.
+
+gs_ex1-bktxt = 'Document header updated'.
+gs_ex1-wrbtr = '12000'.
+gs_ex1-waers = 'USD'.
+gs_ex1-sgtxt = 'Line item updated'.
+
+MODIFY gt_ex1 FROM gs_ex1 INDEX 2.
+
+<font color ="#0000FF">****************## 2-2#</font>
+
+DATA : BEGIN OF gs_ex2.
+         INCLUDE STRUCTURE scarr.
+
+DATA :   connid    TYPE sflight-connid,
+         fldate    TYPE sflight-fldate,
+         price     TYPE sflight-price,
+         currency  TYPE sflight-currency,
+         planetype TYPE sflight-planetype,
+       END OF gs_ex2,
+       gt_ex2 LIKE TABLE OF gs_ex2.
+
+<font color ="#0000FF">****************## 3#</font>
+DATA :
+  gt_ex3 TYPE TABLE OF scustom,
+  gs_ex3 TYPE scustom.
+
+CLEAR : gs_ex3, gt_ex3.
+
+SELECT id name form street city email
+  FROM scustom
+  INTO CORRESPONDING FIELDS OF TABLE gt_ex3
+  WHERE id GT 24
+  AND form NE 'Firma'
+  AND region EQ 'PA'.
+
+cl_demo_output=&gt;display( gt_ex3 ).
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

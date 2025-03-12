@@ -1,0 +1,47 @@
+*&---------------------------------------------------------------------*
+*& Report ZCL1R25999
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+
+INCLUDE zcl1r25999top                           .  " Global Data
+
+INCLUDE zcl1r25999s01                           .  " PBO-Modules
+INCLUDE zcl1r25999o01                           .  " PBO-Modules
+INCLUDE zcl1r25999i01                           .  " PAI-Modules
+INCLUDE zcl1r25999f01                           .  " FORM-Routines
+
+*************************************
+* INITIALIZATION
+*************************************
+INITIALIZATION.
+  PERFORM set_init_value.
+
+*************************************
+* START-OF-SELECTION
+*************************************
+START-OF-SELECTION.
+  PERFORM get_main_data.
+
+  CALL SCREEN 100.
+
+*  cl_demo_output=>display( gt_sbook ).
+
+*GUI Texts
+*----------------------------------------------------------
+* TITLE100 --> ALV with Tapstrip
+* TITLE101 --> Subscreen1
+
+*Text elements
+*----------------------------------------------------------
+* T01 Condition
+
+
+*Selection texts
+*----------------------------------------------------------
+* PA_CARR D       .
+* PA_CONN D       .
+* PA_FLDT D       .
+
+----------------------------------------------------------------------------------
+Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25048TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25048TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25048TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25048TOP                            - Report ZCL1R25048</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25048 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : ztcl199_25, bseg.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class Instance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_container TYPE REF TO cl_gui_docking_container,
+       go_alv_grid  TYPE REF TO cl_gui_alv_grid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+DATA : BEGIN OF gs_body,
+         bukrs    TYPE bseg-bukrs,
+         belnr    TYPE bseg-belnr,
+         gjahr    TYPE bseg-gjahr,
+         buzei    TYPE bseg-buzei,
+         hkont    TYPE bseg-hkont,
+         txt50    TYPE skat-txt50,
+         bschl    TYPE bseg-bschl,
+         koart    TYPE bseg-koart,
+         sgtxt    TYPE bseg-sgtxt,
+         dmbtr    TYPE bseg-dmbtr,
+         pswsl    TYPE bseg-pswsl,
+         cell_tab TYPE lvc_t_styl,
+       END OF gs_body,
+       gt_body LIKE TABLE OF gs_body.
+
+DATA : gs_text TYPE skat,
+       gt_text TYPE TABLE OF skat.
+
+DATA : gs_bseg TYPE bseg,
+       gt_bseg TYPE TABLE OF bseg.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* For ALV</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gs_layout  TYPE lvc_s_layo,
+       gs_fcat    TYPE lvc_s_fcat,
+       gt_fcat    TYPE lvc_t_fcat,
+       gs_variant TYPE disvariant.
+
+DATA : gs_button  type stb_button.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gv_okcode TYPE sy-ucomm,
+       gv_mode   VALUE 'E'.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

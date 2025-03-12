@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25026F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25026F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25026F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25026F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init_data .
+
+  pa_bukrs = '0001'.
+  pa_gjahr = sy-datum.
+
+  so_budt-sign     = 'I'.
+  so_budt-option   = 'BT'.
+  so_budt-low      = '20250101'.
+  so_budt-high     = '20251231'.
+  APPEND so_budt.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_main_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_main_data .
+
+  SELECT a~bukrs a~belnr a~gjahr buzei bktxt hkont gsber shkzg sgtxt
+    INTO CORRESPONDING FIELDS OF TABLE gt_data
+    FROM bkpf AS a INNER JOIN bseg AS b
+      ON a~bukrs EQ b~bukrs
+     AND a~belnr EQ b~belnr
+     AND a~gjahr EQ b~gjahr
+   WHERE a~bukrs EQ pa_bukrs
+     AND a~gjahr EQ pa_gjahr
+     AND budat   IN so_budt.
+
+  "Main data# #### # data# ### ##### logic
+  IF gt_data IS INITIAL.
+    MESSAGE s005 DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_sub_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_sub_data .
+
+  CLEAR gt_text.
+  SELECT saknr txt50
+    INTO CORRESPONDING FIELDS OF TABLE gt_text
+    FROM skat
+   WHERE spras = sy-langu.
+  "And ktopl EQ 'INT'. "Chart of Account(CoA)
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_data_value</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_data_value .
+<font color ="#0000FF">******************************</font>
+<font color ="#0000FF">*Text table ## Master table# ## ### ## # ## ##</font>
+<font color ="#0000FF">*Sort# ### ##</font>
+<font color ="#0000FF">******************************</font>
+  DATA : lv_tabix TYPE sy-tabix,
+         lv_cnt   TYPE i.
+
+<font color ="#0000FF">*  sort : gt_text by saknr ASCENDING,</font>
+<font color ="#0000FF">*         gt_text2 by gsber ASCENDING.</font>
+
+  gt_backup = gt_text.
+
+  SORT gt_backup BY saknr ASCENDING.
+  DELETE ADJACENT DUPLICATES FROM gt_backup COMPARING saknr.
+
+  gt_backup2 = gt_text2.
+
+  SORT gt_text2 BY gsber ASCENDING.
+  DELETE ADJACENT DUPLICATES FROM gt_text2 COMPARING gsber.
+
+  LOOP AT gt_data INTO gs_data.
+
+    lv_tabix = sy-tabix.
+
+    CLEAR gs_backup.
+    READ TABLE gt_backup INTO gs_backup WITH KEY saknr = gs_data-hkont
+                                    BINARY SEARCH.
+    IF sy-subrc EQ 0.
+      gs_data-txt50 = gs_backup-txt50.
+    ENDIF.
+    MODIFY gt_data FROM gs_data INDEX lv_tabix TRANSPORTING txt50.
+
+    CLEAR gs_backup2.
+    READ TABLE gt_backup2 INTO gs_backup2 WITH KEY gsber = gs_data-gsber
+                                      BINARY SEARCH.
+    IF sy-subrc EQ 0.
+      gs_data-gtext = gs_backup2-gtext.
+    ENDIF.
+    MODIFY gt_data FROM gs_data INDEX lv_tabix TRANSPORTING gtext.
+
+  ENDLOOP.
+
+  lv_cnt = lines( gt_data ).
+
+  IF gt_data IS INITIAL.
+    MESSAGE e001 WITH TEXT-e01 DISPLAY LIKE 'W'.
+  ELSE.
+    MESSAGE s001 WITH lv_cnt TEXT-s01.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_sub2_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_sub2_data .
+
+  CLEAR gt_text2.
+  SELECT gsber gtext
+    INTO CORRESPONDING FIELDS OF TABLE gt_text2
+    FROM tgsbt
+   WHERE spras = sy-langu.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form modify_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM modify_screen .
+
+   LOOP AT SCREEN.
+
+    IF screen-group1 EQ 'RAD'.
+      screen-input = 0.
+    ENDIF.
+
+<font color ="#0000FF">*-- Radio button</font>
+    CASE 'X'.
+      WHEN pa_read.
+        IF screen-group1 EQ 'SAK'.
+          screen-input = 0.
+        ENDIF.
+      WHEN pa_edit.
+        IF screen-group1 EQ 'SAK'.
+          screen-input = 1.
+        ENDIF.
+    ENDCASE.
+
+    MODIFY SCREEN.
+
+  ENDLOOP.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

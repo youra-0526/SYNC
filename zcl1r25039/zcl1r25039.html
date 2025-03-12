@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25039</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25039</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] ALV 0210</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25039</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+
+include <a href ="zcl1r25039top.html">zcl1r25039top</a>.  " Global Data
+
+include <a href ="zcl1r25039s01.html">zcl1r25039s01</a>.  " Selection Screen
+include <a href ="zcl1r25039c01.html">zcl1r25039c01</a>.  " ALV Event
+include <a href ="zcl1r25039o01.html">zcl1r25039o01</a>.  " PBO-Modules
+include <a href ="zcl1r25039i01.html">zcl1r25039i01</a>.  " PAI-Modules
+include <a href ="zcl1r25039f01.html">zcl1r25039f01</a>.  " FORM-Routines
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Initialization</font>
+<font color ="#0000FF">*************************************</font>
+INITIALIZATION.
+  PERFORM set_init_data.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Start-of-Selection</font>
+<font color ="#0000FF">*************************************</font>
+START-OF-SELECTION.
+  PERFORM get_base_data.
+  PERFORM make_display_body.
+
+  CALL SCREEN 100.
+
+<font color ="#0000FF">*GUI Texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* TITLE100 --&gt; [C1] ALV!!</font>
+<font color ="#0000FF">* TITLE110 --&gt; Popup Screen</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* S01 ## #######.</font>
+<font color ="#0000FF">* T01 Condition</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_CARR D       .</font>
+<font color ="#0000FF">* PA_PLAN D       .</font>
+<font color ="#0000FF">* SO_BOID D       .</font>
+<font color ="#0000FF">* SO_CONN D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZCL1MSG25</font>
+<font color ="#0000FF">*001   & &</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

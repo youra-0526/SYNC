@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25019</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25019</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Modify screen</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25019</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25019 MESSAGE-ID zclmsg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : scarr, spfli, sflight, sbook.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Selection Screen</font>
+<font color ="#0000FF">*************************************</font>
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+  PARAMETERS pa_bukrs TYPE bkpf-bukrs.
+
+  SELECTION-SCREEN SKIP.
+
+  PARAMETERS : pa_carr TYPE scarr-carrid   MODIF ID car, "modif-id# #### ### ### # ## ####
+               pa_conn TYPE spfli-connid   MODIF ID con, "screen-group1
+               pa_fldt TYPE sflight-fldate MODIF ID fld,
+               pa_id   TYPE sbook-bookid   MODIF ID bid.
+
+  SELECTION-SCREEN SKIP.
+
+  SELECT-OPTIONS : so_from  FOR spfli-cityfrom  MODIF ID cit,
+                   so_to    FOR spfli-cityto    MODIF ID cit,
+                   so_type  FOR sbook-custtype  MODIF ID cus,
+                   so_smoke FOR sbook-smoker    MODIF ID cus.
+SELECTION-SCREEN END OF BLOCK pa1.
+
+SELECTION-SCREEN BEGIN OF BLOCK pa2 WITH FRAME TITLE TEXT-t02.
+  PARAMETERS : pa_scarr RADIOBUTTON GROUP rb1 USER-COMMAND evt,
+               "user-command : ### ### #### ##### ### ### #. #### ### user-command# ## ##
+               pa_spfli RADIOBUTTON GROUP rb1,
+               pa_fligh RADIOBUTTON GROUP rb1,
+               pa_book  RADIOBUTTON GROUP rb1.
+
+  SELECTION-SCREEN ULINE.
+
+  PARAMETERS : pa_city AS CHECKBOX,
+               pa_cust AS CHECKBOX.
+SELECTION-SCREEN END OF BLOCK pa2.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Initialization</font>
+<font color ="#0000FF">*************************************</font>
+INITIALIZATION.
+  pa_bukrs = '1000'.
+
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*At Selection-Screen Output</font>
+<font color ="#0000FF">*************************************</font>
+AT SELECTION-SCREEN OUTPUT.
+  "(## ### #### ### screen ### loop# ####)
+  "##### ## ####
+  LOOP AT SCREEN.
+
+    CASE 'X'.   "### ### ## ##. ###### ###### #### ### #### #
+      WHEN pa_scarr.
+        IF screen-group1 EQ 'CAR'.
+          screen-input = 0. "### ##### ####
+        ELSE.
+          screen-input = 1. "#### #####
+        ENDIF.
+      WHEN pa_spfli.
+        IF screen-group1 EQ 'CON'.
+          screen-input = 0.
+        ELSE.
+          screen-input = 1.
+        ENDIF.
+      WHEN pa_fligh.
+        IF screen-group1 EQ 'FLD'.
+          screen-input = 0.
+        ELSE.
+          screen-input = 1.
+        ENDIF.
+      WHEN pa_book.
+        IF screen-group1 EQ 'BID'.
+          screen-input = 0.
+        ELSE.
+          screen-input = 1.
+        ENDIF.
+    ENDCASE.
+
+    IF screen-name EQ 'PA_BUKRS'.
+      screen-input = 0. "ON : 1, OFF : 0 "READ ONLY : # ##
+    ENDIF.
+
+    MODIFY SCREEN. "itab #### #### modify# ##### ##
+
+  ENDLOOP.
+
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*End-OF-SELECTION. "### ## ####. ### #</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*Call SCREEN 100.</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Condition</font>
+<font color ="#0000FF">* T02 Attribute</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BOOK         Sbook</font>
+<font color ="#0000FF">* PA_BUKRS         Company code</font>
+<font color ="#0000FF">* PA_CARR D       .</font>
+<font color ="#0000FF">* PA_CITY         City(From & to)</font>
+<font color ="#0000FF">* PA_CONN D       .</font>
+<font color ="#0000FF">* PA_CUST         Customer</font>
+<font color ="#0000FF">* PA_FLDT D       .</font>
+<font color ="#0000FF">* PA_FLIGH         Sflight</font>
+<font color ="#0000FF">* PA_ID D       .</font>
+<font color ="#0000FF">* PA_SCARR         Scarr</font>
+<font color ="#0000FF">* PA_SPFLI         Spfli</font>
+<font color ="#0000FF">* SO_FROM D       .</font>
+<font color ="#0000FF">* SO_SMOKE D       .</font>
+<font color ="#0000FF">* SO_TO D       .</font>
+<font color ="#0000FF">* SO_TYPE D       .</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

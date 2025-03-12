@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25028</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25028</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Call function - Tables</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25028</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25028 MESSAGE-ID zcl1msg25.
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and WA</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gt_spfli TYPE TABLE OF spfli,
+       gs_scarr TYPE scarr.
+
+DATA : gs_spfli   TYPE spfli,
+       gt_sflight TYPE TABLE OF sflight.
+
+DATA : gs_bkpf TYPE bkpf,
+       gt_bseg TYPE TABLE OF bseg.
+
+DATA : gt_airline TYPE TABLE OF zscl1_air_25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gv_message(50).
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Selection Screen</font>
+<font color ="#0000FF">*************************************</font>
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+  PARAMETERS : pa_carr TYPE scarr-carrid.
+SELECTION-SCREEN END OF BLOCK pa1.
+
+SELECTION-SCREEN BEGIN OF BLOCK pa2 WITH FRAME TITLE TEXT-t02.
+  PARAMETERS : pa_bukrs TYPE bkpf-bukrs,
+               pa_gjahr TYPE bkpf-gjahr,
+               pa_belnr TYPE bkpf-belnr.
+SELECTION-SCREEN END OF BLOCK pa2.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Start-of-selection</font>
+<font color ="#0000FF">*************************************</font>
+START-OF-SELECTION.
+
+<font color ="#0000FF">*-- Call function - Air flight data</font>
+  "fuction # #### #### function# ##### type# ### ##
+  call function <a href ="zfm_cl1_25_05/zfm_cl1_25_05.html">'ZFM_CL1_25_05'</a>
+    EXPORTING
+      iv_carrid  = pa_carr
+    IMPORTING
+      es_scarr   = gs_scarr
+      ev_message = gv_message
+    TABLES
+      et_spfli   = gt_spfli
+      et_airline = gt_airline.
+
+
+
+
+  IF gt_spfli IS INITIAL.
+    MESSAGE s001 WITH gv_message DISPLAY LIKE 'E'.
+  ENDIF.
+
+<font color ="#0000FF">*-- Call function - Flight data</font>
+  call function <a href ="zfm_cl1_25_06/zfm_cl1_25_06.html">'ZFM_CL1_25_06'</a>
+    EXPORTING
+      iv_carrid  = pa_carr
+    IMPORTING
+      es_spfli   = gs_spfli
+      ev_message = gv_message
+    TABLES
+      et_sflight = gt_sflight.
+
+  IF gt_sflight IS INITIAL.
+    MESSAGE s001 WITH gv_message DISPLAY LIKE 'E'.
+  ENDIF.
+
+<font color ="#0000FF">*-- Call function - Document data</font>
+CALL FUNCTION 'ZFM_CL1_25_07'
+  EXPORTING
+    iv_bukrs   = pa_bukrs
+    iv_gjahr   = pa_gjahr
+    iv_belnr   = pa_belnr
+  IMPORTING
+    es_bkpf    = gs_bkpf
+    ev_message = gv_message
+  TABLES
+    et_bseg    = gt_bseg.
+
+IF gt_bseg IS INITIAL.
+  MESSAGE s001 WITH TEXT-e01.
+ENDIF.
+
+"### #### ### ##### #### ### # ## ##
+
+<font color ="#0000FF">*PERFORM display_data TABLES gt_airline.</font>
+<font color ="#0000FF">*FORM display_data TABLES pt_airline STRUCTURE zscl1_air_25.</font>
+<font color ="#0000FF">*  cl_demo_output=&gt;display( pt_airline[] ).</font>
+<font color ="#0000FF">*ENDFORM.</font>
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* E01 #### ###</font>
+<font color ="#0000FF">* E02</font>
+<font color ="#0000FF">* T01 Condition</font>
+<font color ="#0000FF">* T02 Document Condtion</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BELNR D       .</font>
+<font color ="#0000FF">* PA_BUKRS D       .</font>
+<font color ="#0000FF">* PA_CARR D       .</font>
+<font color ="#0000FF">* PA_GJAHR D       .</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZCL1MSG25</font>
+<font color ="#0000FF">*001   & &</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

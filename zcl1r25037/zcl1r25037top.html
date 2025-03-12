@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25037TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25037TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25037TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25037TOP                            - Report ZCL1R25037</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25037 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : mara, marc, t134t.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class Instance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_container TYPE REF TO cl_gui_docking_container,
+       go_alv_grid  TYPE REF TO cl_gui_alv_grid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+DATA : BEGIN OF gs_body,
+         matnr TYPE mara-matnr,
+         werks TYPE marc-werks,
+         ersda TYPE mara-ersda,
+         mtart TYPE mara-mtart,
+         mtbez TYPE t134t-mtbez,
+         pstat TYPE marc-pstat,
+       END OF gs_body,
+       gt_body LIKE TABLE OF gs_body.
+
+DATA : gt_text TYPE TABLE OF t134t,
+       gs_text TYPE t134t.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* ALV</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gt_fcat   TYPE lvc_t_fcat,
+       gs_fcat   TYPE lvc_s_fcat,
+       gs_layout TYPE lvc_s_layo.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gv_okcode TYPE sy-ucomm.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

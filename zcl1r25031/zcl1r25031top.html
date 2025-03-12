@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25031TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25031TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25031TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25031TOP                            - Report ZCL1R25031</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25031 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Tables</font>
+<font color ="#0000FF">*************************************</font>
+TABLES : scarr, spfli.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Class Instance</font>
+<font color ="#0000FF">*************************************</font>
+DATA : go_container TYPE REF TO cl_gui_custom_container,
+       go_alv_grid  TYPE REF TO cl_gui_alv_grid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Itab and wa</font>
+<font color ="#0000FF">*************************************</font>
+DATA : BEGIN OF gs_scarr.
+         INCLUDE STRUCTURE scarr.
+DATA :   status      TYPE icon-id,
+         country(10),
+       END OF gs_scarr,
+       gt_scarr LIKE TABLE OF gs_scarr.
+
+
+"scarr table# data# # ## #
+<font color ="#0000FF">*DATA : gt_scarr TYPE TABLE OF scarr,</font>
+<font color ="#0000FF">*       gs_scarr TYPE scarr.</font>
+
+<font color ="#0000FF">*-- For ALV</font>
+DATA : gt_fcat   TYPE lvc_t_fcat,
+       gs_fcat   TYPE lvc_s_fcat,
+       gs_layout TYPE lvc_s_layo. "layout# #### structure##
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">* Common Variable</font>
+<font color ="#0000FF">*************************************</font>
+"#### ## action# ##### ## ## : ### ###(user command) ok code
+"user command# ## ### ### #######
+DATA : gv_okcode TYPE sy-ucomm. "Get User-command (user# command ## ### ##)
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

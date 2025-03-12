@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25052F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25052F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25052F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25052F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_init_value</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_init_value .
+
+  _ranges : so_carr 'I' 'EQ' 'AA' ' ',
+            so_carr 'I' 'EQ' 'LH' ' '.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_airline_master</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_airline_master .
+
+<font color ="#0000FF">*-- Airline master</font>
+  CLEAR gt_scarr.
+  SELECT carrid carrname currcode url
+    INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+    FROM scarr
+   WHERE carrid IN so_carr.
+
+  IF gt_scarr IS INITIAL.
+    MESSAGE s001 DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form display_screen</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM display_screen .
+
+  IF go_cont IS INITIAL.
+
+    CLEAR : gt_tfcat, gt_bfcat.
+    PERFORM set_tfcat USING : 'X' 'CARRID'   'SCARR' 'C' ' ',
+                              ' ' 'CARRNAME' 'SCARR' ' ' ' ',
+                              ' ' 'CURRCODE' 'SCARR' 'C' ' ',
+                              ' ' 'URL'      'SCARR' ' ' 'X'.
+
+    PERFORM set_bfcat USING : 'X' 'CARRID'   'SPFLI' 'C' ' ',
+                              'X' 'CONNID'   'SPFLI' ' ' ' ',
+                              ' ' 'CITYFROM' 'SPFLI' ' ' ' ',
+                              ' ' 'CITYTO'   'SPFLI' ' ' 'X'.
+    PERFORM set_layo.
+    PERFORM create_obj.
+
+    SET HANDLER : lcl_event_handler=&gt;double_click FOR go_top_alv.
+
+<font color ="#0000FF">*-- # alv</font>
+    gs_variant-handle = 'ALV1'.
+    CALL METHOD go_top_alv-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = gs_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layo
+      CHANGING
+        it_outtab       = gt_scarr
+        it_fieldcatalog = gt_tfcat.
+
+<font color ="#0000FF">*-- ## alv</font>
+    gs_variant-handle = 'ALV2'.
+    CALL METHOD go_bottom_alv-&gt;set_table_for_first_display
+      EXPORTING
+        is_variant      = gs_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layo
+      CHANGING
+        it_outtab       = gt_spfli
+        it_fieldcatalog = gt_bfcat.
+
+  ENDIF.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_tfcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_tfcat USING pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_tfcat-key       = pv_key.
+  gs_tfcat-fieldname = pv_field.
+  gs_tfcat-ref_table = pv_table.
+  gs_tfcat-just      = pv_just.
+  gs_tfcat-emphasize = pv_emph.
+  APPEND gs_tfcat TO gt_tfcat.
+  CLEAR gs_tfcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_bfcat</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&      --&gt; P_</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_bfcat USING : pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_bfcat-key       = pv_key.
+  gs_bfcat-fieldname = pv_field.
+  gs_bfcat-ref_table = pv_table.
+  gs_bfcat-just      = pv_just.
+  gs_bfcat-emphasize = pv_emph.
+  APPEND gs_bfcat TO gt_bfcat.
+  CLEAR gs_bfcat.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_layo</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_layo .
+
+  gs_layo-zebra      = abap_true.
+  gs_layo-cwidth_opt = 'A'.
+  gs_layo-sel_mode   = 'D'.
+
+  gs_variant-report  = sy-repid.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form create_obj</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM create_obj .
+
+  CREATE OBJECT go_cont
+    EXPORTING
+      side      = go_cont-&gt;dock_at_left
+      extension = 5000.
+
+<font color ="#0000FF">*-- #### : Split screen</font>
+  CREATE OBJECT go_split_cont
+    EXPORTING
+      parent  = go_cont
+      rows    = 2  "2#
+      columns = 1. "1#
+
+<font color ="#0000FF">*-- ## container# ##</font>
+  CALL METHOD go_split_cont-&gt;get_container
+    EXPORTING
+      row       = 1 "1#
+      column    = 1 "1#
+    RECEIVING
+      container = go_top_cont.
+
+  CALL METHOD go_split_cont-&gt;get_container
+    EXPORTING
+      row       = 2 "2#
+      column    = 1 "1#
+    RECEIVING
+      container = go_bottom_cont.
+
+<font color ="#0000FF">*-- ALV# ##</font>
+  CREATE OBJECT go_top_alv
+    EXPORTING
+      i_parent = go_top_cont.
+
+  CREATE OBJECT go_bottom_alv
+    EXPORTING
+      i_parent = go_bottom_cont.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form handle_double_click</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&      --&gt; E_ROW</font>
+<font color ="#0000FF">*&      --&gt; E_COLUMN</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM handle_double_click  USING    pv_row
+                                   pv_column.
+<font color ="#0000FF">*-- ### alv# ####(gt_scarr)</font>
+<font color ="#0000FF">*-- #### ### ## ##</font>
+  CLEAR gs_scarr.
+  READ TABLE gt_scarr INTO gs_scarr INDEX pv_row.
+
+<font color ="#0000FF">*  "select## ## ### ## alv# ##(gt_spfli)</font>
+  CLEAR gt_spfli.
+  SELECT carrid connid cityfrom cityto
+    INTO CORRESPONDING FIELDS OF TABLE gt_spfli
+    FROM spfli
+   WHERE carrid EQ gs_scarr-carrid.
+
+<font color ="#0000FF">*-- ### #### ##### ## ### itab#### ####</font>
+<font color ="#0000FF">*  CLEAR : gt_schedule.</font>
+<font color ="#0000FF">*  LOOP AT gt_schedule INTO gs_schedule WHERE carrid EQ gs_scarr-carrid.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*    MOVE-CORRESPONDING gs_schedule TO gs_spfli.</font>
+<font color ="#0000FF">*    APPEND gs_spfli TO gt_spfli.</font>
+<font color ="#0000FF">*    CLEAR gs_spfli.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  ENDLOOP.</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">*  IF gt_spfli IS INITIAL.</font>
+<font color ="#0000FF">*    MESSAGE e001 DISPLAY LIKE 'E'.</font>
+<font color ="#0000FF">*  ENDIF.</font>
+
+  PERFORM refresh_table.
+
+<font color ="#0000FF">*  CALL METHOD go_bottom_alv-&gt;refresh_table_display.</font>
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form refresh_table</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM refresh_table .
+
+  DATA : ls_stable TYPE lvc_s_stbl.
+
+  ls_stable-row = abap_true.
+  ls_stable-col = abap_true.
+
+  CALL METHOD go_bottom_alv-&gt;refresh_table_display
+    EXPORTING
+      is_stable = ls_stable.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_schedule_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_schedule_data .
+
+<font color ="#0000FF">*-- ## alv# ### ## #### ####</font>
+  SELECT a~carrid, connid, cityfrom, cityto
+    FROM spfli AS a INNER JOIN @gt_scarr AS b
+      ON a~carrid EQ b~carrid
+   WHERE a~carrid IN @so_carr
+     AND connid   IN @so_conn
+   INTO CORRESPONDING FIELDS OF TABLE @gt_schedule.
+
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

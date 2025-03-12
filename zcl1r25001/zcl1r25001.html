@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25001</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25001</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Declaration of variable</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25001</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25001.
+
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Local type - ABAP Dictionary  ( Data element )</font>
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Declaration command : TYPES</font>
+<font color ="#0000FF">*************************************************************************</font>
+TYPES : tv_char3 TYPE c LENGTH 3,             "incomplete data type
+        tv_dec3  TYPE p  LENGTH 5 DECIMALS 3,
+        tv_int4  TYPE i,                      "complete data type
+        tv_date  TYPE d.
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">* Declaration of variable</font>
+<font color ="#0000FF">*--------------------------*</font>
+<font color ="#0000FF">* Using ABAP Incomplete type</font>
+DATA : gv_char3    TYPE tv_char3,     "Reference to local data type'
+       gv_char2    TYPE c LENGTH 2,
+       gv_var1(2)  TYPE c,            "### length# ##### ### ## ##
+       gv_var2     TYPE c,            " length# #### ### ## 1### ###
+       gv_var3,                       " type# #### ### ## Char #### ##. type#, length# #### ### char(1)# ##
+       gv_var4(10),                   " char type# 10## ###
+       gv_bukrs    TYPE bukrs.
+
+DATA : gv_pvar1   TYPE p LENGTH 5 DECIMALS 2,
+       gv_pvar2   TYPE p DECIMALS 2,
+       gv_num1    TYPE n LENGTH 5,
+       gv_num2(5) TYPE n,
+       gv_num3    LIKE gv_num1.       " DATA #### ### ### #### ##
+
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Using complete type</font>
+<font color ="#0000FF">*************************************************************************</font>
+DATA : gv_date1 TYPE d,
+       gv_date2 TYPE tv_date,  " Reference to local type
+       gv_budat TYPE budat,    " Reference to global type
+       gv_date3 LIKE gv_date1, " DATA #### ### ### #### ##
+       gv_time  TYPE t,
+       gv_int4  TYPE i,
+       gv_float TYPE f,
+       gv_str   TYPE string.   " Dynamic charcter string
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Reference to ABAP Dictionary - Global type ( Table or Structure field )</font>
+<font color ="#0000FF">*************************************************************************</font>
+DATA : gv_carrid2   TYPE spfli-carrid,
+       gv_countryfr TYPE spfli-countryfr,
+       gv_cityfrom  TYPE spfli-cityfrom.
+
+DATA : gv_bukrs2 TYPE bkpf-bukrs, "Company code
+       gv_belnr  TYPE bkpf-belnr, "Document number
+       gv_gjahr  TYPE bkpf-gjahr. "Fiscal year
+
+DATA : gv_augbl TYPE bseg-augbl, "Document number
+       gv_koart TYPE bseg-koart, "Account type
+       gv_zumsk TYPE bseg-zumsk. "Target g/l indicator
+
+DATA : gv_uname TYPE sy-uname,
+       gv_langu TYPE sy-langu,
+       gv_datum TYPE sy-datum,
+       gv_uzeit TYPE sy-uzeit,
+       gv_tcode TYPE sy-tcode,
+       gv_repid TYPE sy-repid,
+       gv_index TYPE sy-index.
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Internal table and Work area ( Structure )</font>
+<font color ="#0000FF">*************************************************************************</font>
+
+<font color ="#0000FF">*internal table: Reference to Transparent table</font>
+DATA : gt_scarr   TYPE TABLE OF scarr,
+       gt_spfli   TYPE TABLE OF spfli,
+       gt_sbook   TYPE TABLE OF sbook,
+       gt_sflight TYPE TABLE OF sflight.
+
+<font color ="#0000FF">*work area: Reference to Transparent table</font>
+DATA : gs_scarr   TYPE scarr,
+       gs_spfli   TYPE spfli,
+       gs_sbook   TYPE sbook,
+       gs_sflight TYPE sflight.
+
+<font color ="#0000FF">*internal table: Reference to Structure</font>
+DATA : gt_comp TYPE TABLE OF zscl1_comp_25.
+
+<font color ="#0000FF">*internal table : Reference to table type</font>
+DATA: gt_info TYPE zlvc_t_info25.
+
+<font color ="#0000FF">*work area: Reference to line type in table type</font>
+DATA : gs_info TYPE zscl1_comp_25.
+
+
+<font color ="#0000FF">*------------1/7--------------*</font>
+
+<font color ="#0000FF">*##: tax ### ####</font>
+DATA: gt_tax TYPE TABLE OF ztc1_tax_25,
+      gs_tax TYPE ztc1_tax_25.
+
+<font color ="#0000FF">*##: board ### ####</font>
+DATA: gt_board TYPE TABLE OF ztcl1board25,
+      gs_board TYPE ztcl1board25.
+
+
+<font color ="#0000FF">*************************************************************************</font>
+<font color ="#0000FF">*Calculation</font>
+<font color ="#0000FF">*************************************************************************</font>
+DATA: gv_string  TYPE string  VALUE 'SUNC6', "string ### #### ## ##
+      gv_result  TYPE i,
+      gv_number1 TYPE i,
+      gv_number2 TYPE i.
+
+<font color ="#0000FF">*Assign data</font>
+gv_number1 = 7.
+gv_number2 = 5.
+
+CLEAR gv_result. "#### #### #
+
+gv_result = gv_number1 + gv_number2. "Adding
+gv_result = gv_number1 - gv_number2. "Subtraction
+gv_result = gv_number1 * gv_number2. "Multiply
+gv_result = gv_number2 / gv_number1. "Divide
+
+gv_result = gv_result + 1.           "Summary
+gv_result = 2 ** 3.
+gv_result = ( gv_number1 * gv_number2 ) ** 2.
+
+gv_result = gv_number2 DIV gv_number1. "#
+gv_result = gv_number2 MOD gv_number1. "###
+
+data gv_len TYPE i.
+
+gv_len = strlen( gv_string ).
+
+WRITE gv_len.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

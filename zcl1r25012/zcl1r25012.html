@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25012</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25012</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Selection Screen - Parameters</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25012</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25012 MESSAGE-ID zcl1msg25.
+
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Internal table and Work area</font>
+<font color ="#0000FF">*************************************</font>
+DATA : gt_scarr TYPE TABLE OF scarr,
+       gs_scarr TYPE scarr,
+       gv_name  TYPE scarr-carrname.
+
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Selection screen</font>
+<font color ="#0000FF">*************************************</font>
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01. "###### title### "title textsymbol : t01
+  PARAMETERS : pa_carr      TYPE scarr-carrid DEFAULT 'LH' OBLIGATORY, "obligatory : ## ##
+               pa_name      TYPE scarr-carrname,
+               pa_email(50) LOWER CASE,  "##### #### ## ####? -&gt; lower case
+               pa_part      TYPE ztcl1part_25_01-part_code AS LISTBOX VISIBLE
+                                                              LENGTH 10.
+
+<font color ="#0000FF">*               pa_chk1      AS CHECKBOX,</font>
+<font color ="#0000FF">*               pa_chk2      AS CHECKBOX DEFAULT 'X', "chk2 ##### check.</font>
+<font color ="#0000FF">*               pa_rb1       RADIOBUTTON GROUP rb1,</font>
+<font color ="#0000FF">*               pa_rb2       RADIOBUTTON GROUP rb1 DEFAULT 'X',</font>
+<font color ="#0000FF">*               pa_rb3       RADIOBUTTON GROUP rb1.</font>
+SELECTION-SCREEN END OF BLOCK pa1.
+
+"selection screen# ##### block# ## # ## "block# ### #### ##
+SELECTION-SCREEN BEGIN OF BLOCK pa2 WITH FRAME TITLE TEXT-t02.
+  PARAMETERS : pa_chk1 AS CHECKBOX,
+               pa_chk2 AS CHECKBOX DEFAULT 'X'. "chk2 ##### check.
+
+  SELECTION-SCREEN ULINE. "### ##(#) ##
+
+  PARAMETERS : pa_rb1 RADIOBUTTON GROUP rb1,
+               pa_rb2 RADIOBUTTON GROUP rb1 DEFAULT 'X',
+               pa_rb3 RADIOBUTTON GROUP rb1.
+  SELECTION-SCREEN ULINE.
+
+  SELECTION-SCREEN BEGIN OF BLOCK pa3 WITH FRAME TITLE TEXT-t03.
+    PARAMETERS : pa_btn1 RADIOBUTTON GROUP rb2,
+                 pa_btn2 RADIOBUTTON GROUP rb2.
+  SELECTION-SCREEN END OF BLOCK pa3.
+
+SELECTION-SCREEN END OF BLOCK pa2.
+
+<font color ="#0000FF">******************##</font>
+SELECTION-SCREEN BEGIN OF BLOCK pa4 WITH FRAME TITLE TEXT-t04.
+  PARAMETERS : pa_year TYPE bkpf-gjahr DEFAULT sy-datum OBLIGATORY,
+               pa_pp   TYPE bkpf-monat DEFAULT 1 OBLIGATORY.
+
+SELECTION-SCREEN END OF BLOCK pa4.
+
+SELECTION-SCREEN BEGIN OF BLOCK pa5 WITH FRAME TITLE TEXT-t05.
+  PARAMETERS : pa_chk3 AS CHECKBOX,
+               pa_chk4 AS CHECKBOX DEFAULT 'X',
+               pa_chk5 AS CHECKBOX.
+  SELECTION-SCREEN ULINE.
+
+  SELECTION-SCREEN BEGIN OF BLOCK pa6 WITH FRAME TITLE TEXT-t06.
+    PARAMETERS : pa_btn3 RADIOBUTTON GROUP rb3,
+                 pa_btn4 RADIOBUTTON GROUP rb3,
+                 pa_btn5 RADIOBUTTON GROUP rb3,
+                 pa_btn6 RADIOBUTTON GROUP rb3,
+                 pa_btn7 RADIOBUTTON GROUP rb3.
+
+  SELECTION-SCREEN END OF BLOCK pa6.
+SELECTION-SCREEN END OF BLOCK pa5.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Start of main routine</font>
+<font color ="#0000FF">*************************************</font>
+
+CLEAR : gt_scarr, gv_name.
+gv_name = '%' && pa_name && '%'.
+
+SELECT carrid carrname currcode url
+INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+FROM scarr
+WHERE carrid EQ pa_carr
+  AND carrname LIKE gv_name.
+
+
+cl_demo_output=&gt;display( gt_scarr ).
+
+<font color ="#0000FF">*Text elements</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* T01 Condition</font>
+<font color ="#0000FF">* T02 Multi choice</font>
+<font color ="#0000FF">* T03 Sub choice</font>
+<font color ="#0000FF">* T04 Condition</font>
+<font color ="#0000FF">* T05 Check button</font>
+<font color ="#0000FF">* T06 Radio button</font>
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* PA_BTN1         Korean cousine</font>
+<font color ="#0000FF">* PA_BTN2         American cousine</font>
+<font color ="#0000FF">* PA_CARR D       .</font>
+<font color ="#0000FF">* PA_CHK1         Check box 1</font>
+<font color ="#0000FF">* PA_CHK2         Check box 2</font>
+<font color ="#0000FF">* PA_EMAIL         Email</font>
+<font color ="#0000FF">* PA_NAME         Airline name</font>
+<font color ="#0000FF">* PA_PART D       .</font>
+<font color ="#0000FF">* PA_PP D       .</font>
+<font color ="#0000FF">* PA_RB1         Food 1</font>
+<font color ="#0000FF">* PA_RB2         Food 2</font>
+<font color ="#0000FF">* PA_RB3         Food 3</font>
+<font color ="#0000FF">* PA_YEAR D       .</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

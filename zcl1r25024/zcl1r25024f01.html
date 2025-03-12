@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25024F01</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25024F01</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25024F01</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include          ZCL1R25024F01</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_base_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_base_data .
+  CLEAR: gs_body.
+
+  SELECT mtart mtref mbref pstat vmtpo kzgrp kkref
+    INTO CORRESPONDING FIELDS OF TABLE gt_body
+    FROM t134
+   WHERE mtref EQ 'HAWA'
+     AND mbref EQ 'ROH'
+     AND flref NE 'WERT'
+     AND ardel GE 0
+     AND mtart IN so_mtart.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form get_sub_data</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM get_sub_data .
+
+  CLEAR: gs_text.
+  SELECT kkref krftx
+    INTO CORRESPONDING FIELDS OF TABLE gt_text
+    FROM t025l
+    WHERE spras = sy-langu.
+
+ENDFORM.
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Form set_data_value</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& --&gt;  p1        text</font>
+<font color ="#0000FF">*& &lt;--  p2        text</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+FORM set_data_value .
+  "itab# index# #### ### ## ##
+  DATA lv_tabix TYPE sy-tabix.
+
+  "main itab# data# main wa# ###
+  LOOP AT gt_body INTO gs_body.
+
+    lv_tabix = sy-tabix.
+    "sub itab# data# sub wa# ## ## sub itab# main wa# text table# kkref# ## ###
+    READ TABLE gt_text INTO gs_text WITH KEY kkref = gs_body-kkref.
+    "main wa# text field# ## sub wa# text field# ## ##
+    gs_body-krftx = gs_text-krftx.
+
+    "## ##### main itab# ## #### index# krftx### ####
+    IF sy-subrc = 0.
+      MODIFY gt_body FROM gs_body INDEX lv_tabix TRANSPORTING krftx.
+    ENDIF.
+    "main wa# text filed# #### ###
+    IF gs_body-krftx IS NOT INITIAL.
+      "## #### ##
+      MESSAGE s003 WITH TEXT-e01 DISPLAY LIKE 'W'.
+    ELSE.
+      MESSAGE s005 DISPLAY LIKE 'E'.
+    ENDIF.
+
+  ENDLOOP.
+ENDFORM.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

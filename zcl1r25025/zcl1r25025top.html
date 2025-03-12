@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25025TOP</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25025TOP</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  Include ZCL1R25025TOP</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Include ZCL1R25025TOP                            - Report ZCL1R25025</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25025 MESSAGE-ID zcl1msg25.
+
+TABLES : bkpf, bseg, cskt.
+
+"main data structure ##
+DATA : BEGIN OF gs_data,
+         bukrs TYPE bkpf-bukrs,
+         belnr TYPE bkpf-belnr,
+         gjahr TYPE bkpf-gjahr,
+         buzei TYPE bseg-buzei,
+         bktxt TYPE bkpf-bktxt,
+         koart TYPE bseg-koart,
+         kostl TYPE bseg-kostl,
+         ktext TYPE cskt-ktext,
+         sgtxt TYPE bseg-sgtxt,
+         dmbtr TYPE bseg-dmbtr,
+         waers TYPE bkpf-waers,
+       END OF gs_data,
+       gt_data LIKE TABLE OF gs_data.
+
+"sub data structure ##
+DATA : gs_text TYPE cskt,
+       gt_text TYPE TABLE OF cskt.
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

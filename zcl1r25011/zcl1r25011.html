@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25011</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25011</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Loops Syntax</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25011</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25011 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Internal table and Work area</font>
+<font color ="#0000FF">*************************************</font>
+
+DATA : gt_flight TYPE TABLE OF sflight,
+       gt_scarr  TYPE TABLE OF scarr,
+       gs_flight TYPE sflight,
+       gs_scarr  TYPE scarr.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Common variable</font>
+<font color ="#0000FF">*************************************</font>
+
+DATA : gv_cnt    TYPE i,
+       gv_num1   TYPE i,
+       gv_num2   TYPE i,
+       gv_result TYPE i.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Main routine</font>
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*DO - ENDDO</font>
+DO.
+
+  WRITE sy-index.
+
+  IF sy-index GE 10.
+    EXIT.
+  ENDIF.
+
+ENDDO.
+
+DATA : gv_msg(100).
+
+<font color ="#0000FF">*Get base data</font>
+CLEAR gt_scarr.
+SELECT carrid carrname currcode url
+  INTO CORRESPONDING FIELDS OF TABLE gt_scarr
+  FROM scarr.
+
+<font color ="#0000FF">*Case 1 : &&</font>
+gv_msg = sy-dbcnt && 'Displayed'.
+
+
+<font color ="#0000FF">*Case 2 : concatenate</font>
+<font color ="#0000FF">*gv_dbcnt = sy-dbcnt.</font>
+
+CLEAR gv_msg.
+<font color ="#0000FF">*CONCATENATE gv_dbcnt 'Displayed' INTO gv_msg SEPARATED BY '/'.</font>
+
+
+MESSAGE i000 WITH gv_msg DISPLAY LIKE 'W'.
+MESSAGE i037(k5) DISPLAY LIKE 'E'.
+
+
+DO.
+
+  CLEAR gs_scarr.
+  READ TABLE gt_scarr INTO gs_scarr INDEX sy-index.
+
+  IF sy-subrc &lt;&gt; 0.
+    EXIT.
+  ELSE.
+    WRITE :/ gs_scarr.
+  ENDIF.
+
+<font color ="#0000FF">*  IF sy-subrc = 0.</font>
+<font color ="#0000FF">*    WRITE :/ gs_scarr.</font>
+<font color ="#0000FF">*  ELSE.</font>
+<font color ="#0000FF">*    EXIT.</font>
+<font color ="#0000FF">*  ENDIF.</font>
+
+ENDDO.
+
+CLEAR : gv_num1, gv_num2, gv_result.
+DO.
+
+  gv_num1 = 1.
+  gv_num2 = 1.
+
+  gv_result = gv_result + ( gv_num1 + gv_num2 ).
+
+  IF gv_result GE 10. "#### # #
+    EXIT.
+  ENDIF.
+
+ENDDO.
+
+DO 7 TIMES.
+
+  WRITE :/ sy-index.
+
+<font color ="#0000FF">*This abort condition is optional</font>
+  IF sy-index GE 3.
+    EXIT.
+  ENDIF.
+
+ENDDO.
+
+<font color ="#0000FF">*nested loops ####</font>
+
+DO 3 TIMES.
+  WRITE :/ 'Outter loop :', sy-index. "#### ####
+
+  DO 2 TIMES.
+
+    WRITE :/ 'Inner loop :', sy-index. "#### ###
+
+  ENDDO.
+
+ENDDO.
+
+
+CLEAR gv_result.
+WHILE gv_result LT 10. "### ### #### ## ##
+
+  gv_result = gv_result + 1.
+
+  WRITE :/ 'WHILE Loops : ', gv_result.
+
+<font color ="#0000FF">*This abort condition is optional</font>
+  IF gv_result GT 5.
+    EXIT.
+  ENDIF.
+
+ENDWHILE.
+
+
+gs_scarr-carrid = 'AA'.
+WHILE gs_scarr-carrid BETWEEN 'AA' AND 'LH'.
+
+  CLEAR gs_scarr.
+  READ TABLE gt_scarr INTO gs_scarr INDEX sy-index.
+  " gt_scarr # ##### ### write# ##
+
+  WRITE :/ gs_scarr-carrid.
+
+ENDWHILE.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*### ## ## ### #### #### ####</font>
+<font color ="#0000FF">*************************************</font>
+DATA : lv_left   TYPE i,
+       lv_right  TYPE i,
+       lv_result TYPE i.
+
+DO 9 TIMES.
+  lv_left = sy-index.
+  WRITE : / lv_left, '####.'.
+
+  DO 9 TIMES.
+    lv_right = sy-index.
+    lv_result = lv_left * lv_right.
+    WRITE : / lv_left, '*', lv_right, '=', lv_result.
+  ENDDO.
+
+ENDDO.
+
+WRITE sy-uline.
+
+IF gv_num1 GE 9.
+  EXIT.
+ENDIF.
+
+<font color ="#0000FF">*message e003(k5) with '1000'.</font>
+
+
+<font color ="#0000FF">*Messages</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: K5</font>
+<font color ="#0000FF">*037   No data found</font>
+<font color ="#0000FF">*</font>
+<font color ="#0000FF">* Message class: ZCL1MSG25</font>
+<font color ="#0000FF">*000   &</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>

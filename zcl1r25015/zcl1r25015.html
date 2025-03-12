@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>ZCL1R25015</title>
+</head>
+<body bgcolor="#FFFFE0">
+<font size="3" face = "Arial" color="#000000"><b>Code listing for: ZCL1R25015</b></font>
+<br>
+<font size="3" face = "Arial" color="#000000"><b>Description:  [C1] Header line itab</b></font>
+<hr>
+<pre width="100">
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*& Report ZCL1R25015</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+<font color ="#0000FF">*&</font>
+<font color ="#0000FF">*&---------------------------------------------------------------------*</font>
+REPORT zcl1r25015 MESSAGE-ID zcl1msg25.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Internal table and Work area</font>
+<font color ="#0000FF">*************************************</font>
+"abap dic ### wa, itab
+DATA : gt_bkpf TYPE TABLE OF bkpf,
+       gs_bkpf TYPE bkpf.
+
+"## ### wa# ### #### itab
+DATA : BEGIN OF gs_data1,
+         carrid TYPE scarr-carrid,
+         connid TYPE spfli-connid,
+         fldate TYPE sflight-fldate,
+         url    TYPE scarr-url,
+       END OF gs_data1,
+       gt_data1 LIKE TABLE OF gs_data1.
+
+TABLES : scarr.
+
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Header line Internal table</font>
+<font color ="#0000FF">*************************************</font>
+"##1
+DATA : gt_scarr TYPE TABLE OF scarr WITH HEADER LINE,
+       gt_spfli TYPE TABLE OF spfli WITH HEADER LINE.
+
+"##2 (sflight # #### herdaer line# ##### size category# 0## ###)
+DATA : gt_sflight TYPE sflight OCCURS 0 WITH HEADER LINE.
+
+"##3
+DATA : BEGIN OF gt_flight OCCURS 0,
+         "occurs# #### ## size# ## headerline itab# #
+         "size category# #### ###. 0## #### ## size category# #### ####
+         "### ##### ### ##. #### ### ##.
+         "### #### ##### ### # ##. ### #### ## ##
+         carrid TYPE scarr-carrid,
+         connid TYPE spfli-connid,
+         fldate TYPE sflight-fldate,
+         url    TYPE scarr-url,
+       END OF gt_flight.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Selection Screen</font>
+<font color ="#0000FF">*************************************</font>
+SELECT-OPTIONS so_carr FOR scarr-carrid.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Initialization</font>
+<font color ="#0000FF">*************************************</font>
+
+INITIALIZATION.
+<font color ="#0000FF">*-- 1. SO_CARR# defalut # 'AA'~'LH' ## ####</font>
+CLEAR : so_carr, so_carr[].
+  so_carr-sign   = 'I'.
+  so_carr-option = 'BT'.
+  so_carr-low    = 'AA'.
+  so_carr-high   = 'LH'.
+  APPEND so_carr.
+
+<font color ="#0000FF">*-- 2. SO_CARR# Defalut # 'BA' ## ### #### #### eq</font>
+  CLEAR so_carr.
+  so_carr-sign   = 'I'.
+  so_carr-option = 'EQ'.
+  so_carr-low    = 'BA'.
+  APPEND so_carr.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*At Selection-Screen</font>
+<font color ="#0000FF">*************************************</font>
+AT SELECTION-SCREEN.
+<font color ="#0000FF">*-- ## low# 'BA'## ## SO_CARR# ##### ####</font>
+
+<font color ="#0000FF">*-- CASE 1 : READ TABLE</font>
+  READ TABLE so_carr WITH KEY low = 'BA'.
+
+<font color ="#0000FF">*-- CASE 2 : LOOP#</font>
+  IF so_carr-low = 'BA'.
+    WRITE:/ so_carr.
+  ELSE.
+    STOP.
+  ENDIF.
+
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*Start of main routine</font>
+<font color ="#0000FF">*************************************</font>
+<font color ="#0000FF">*-- 1. GT_SCARR# CARRID = 'AA' CARRNAME = 'American airline</font>
+<font color ="#0000FF">*                 CURRCODE = 'USD' URL = 'http://www.aa.com# APPEND</font>
+<font color ="#0000FF">*-- 2. GT_SPFLI# CARRID = 'LH' CONNID = '0400' CITYFROM = 'NEW YORK'</font>
+<font color ="#0000FF">*                CITYTO = 'SEOUL'# APPEND</font>
+<font color ="#0000FF">*-- 3. GT_SFLIGHT# CARRID = 'BA' CONNID = '0500' FLDATE = System date</font>
+<font color ="#0000FF">*                 URL = 'http://www.britishairway.com# APPEND</font>
+<font color ="#0000FF">*-- 4. GT_SCARR## CARRID = 'AA' AND CURRCODE = 'USD'# #### ###.</font>
+<font color ="#0000FF">*-- 5. GT_SFLIGHT# 1## ## ###.</font>
+
+  "Refresh : itab ## clear ###
+  REFRESH gt_scarr. "Clear the itab / itab clear# #
+  CLEAR gt_scarr.   "header line# clear# # / wa# clear
+
+  CLEAR : gt_scarr, gt_scarr[]. "
+
+  gt_scarr-carrid    = 'AA'.
+  gt_scarr-carrname  = 'American airline'.
+  gt_scarr-currcode  = 'USD'.
+  gt_scarr-url       = 'http://www.aa.com'.
+  APPEND gt_scarr.
+
+  CLEAR gt_scarr.
+
+  cl_demo_output=&gt;display( gt_scarr[] ).
+
+  gt_spfli-carrid    = 'LH'.
+  gt_spfli-connid    = '0400'.
+  gt_spfli-cityfrom  = 'NEW YORK'.
+  gt_spfli-cityto    = 'SEOUL'.
+  APPEND gt_spfli.
+
+  gt_flight-carrid   = 'BA'.
+  gt_flight-connid   = '0500'.
+  gt_flight-fldate   = sy-datum.
+  gt_flight-url      = 'http://www.britishairway.com'.
+  APPEND gt_flight.
+
+  READ TABLE gt_scarr WITH KEY carrid   = 'AA'
+                               currcode = 'USD'.
+  READ TABLE gt_sflight INDEX 1.
+
+
+<font color ="#0000FF">*Selection texts</font>
+<font color ="#0000FF">*----------------------------------------------------------</font>
+<font color ="#0000FF">* SO_CARR D       .</font>
+</pre>
+<hr>
+<font size="2" face = "Sans Serif">Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 754
+</font>
+</body>
+</html>
