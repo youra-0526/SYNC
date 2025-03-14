@@ -1,0 +1,12 @@
+*&---------------------------------------------------------------------*
+*& Include          ZCL1R25998S01
+*&---------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS : so_bxcd FOR ztbox_25_01-box_code,
+                   so_tocd FOR ztbox_25_01-tool_code.
+
+SELECTION-SCREEN END OF BLOCK pa1.
+
+----------------------------------------------------------------------------------
+Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758

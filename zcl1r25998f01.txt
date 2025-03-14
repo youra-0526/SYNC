@@ -1,0 +1,457 @@
+*&---------------------------------------------------------------------*
+*& Include          ZCL1R25998F01
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Form get_main_data
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_main_data .
+
+  SELECT *
+    INTO CORRESPONDING FIELDS OF TABLE gt_body
+    FROM ztbox_25_01
+   WHERE box_code  IN so_bxcd
+     AND tool_code IN so_tocd.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form display_screen
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM display_screen .
+
+  IF go_cont IS INITIAL.
+
+    CLEAR gt_fcat.
+    PERFORM set_fcat USING : 'X' 'BOX_CODE'    'ZTBOX_25_01' ' ' ' ',
+                             'X' 'TOOL_CODE'   'ZTBOX_25_01' ' ' ' ',
+                             ' ' 'TOOL_NAME'   'ZTBOX_25_01' ' ' ' ',
+                             ' ' 'ANLN1'       'ZTBOX_25_01' ' ' ' ',
+                             ' ' 'USE_YN'      'ZTBOX_25_01' ' ' ' ',
+                             ' ' 'TOOL_POS'    'ZTBOX_25_01' ' ' ' '.
+    PERFORM set_layo.
+    PERFORM create_obj.
+
+    SET HANDLER : lcl_event_handler=>user_command FOR go_alv,
+                  lcl_event_handler=>edit_toolbar FOR go_alv.
+
+    CALL METHOD go_alv->set_table_for_first_display
+      EXPORTING
+        is_variant      = gs_variant
+        i_save          = 'A'
+        i_default       = 'X'
+        is_layout       = gs_layo
+      CHANGING
+        it_outtab       = gt_body
+        it_fieldcatalog = gt_fcat.
+  ENDIF.
+
+  PERFORM register_event.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form set_fcat
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM set_fcat USING : pv_key pv_field pv_table pv_just pv_emph.
+
+  gs_fcat-key       = pv_key.
+  gs_fcat-fieldname = pv_field.
+  gs_fcat-ref_table = pv_table.
+  gs_fcat-just      = pv_just.
+  gs_fcat-emphasize = pv_emph.
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR gs_fcat.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form set_layo
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM set_layo .
+
+  gs_layo-zebra      = 'X'.
+  gs_layo-sel_mode   = 'D'.
+  gs_layo-cwidth_opt = 'A'.
+  gs_layo-stylefname = 'CELL_TAB'.
+
+  gs_variant-report = sy-repid.
+  gs_variant-handle = 'ALV1'.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form create_obj
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM create_obj .
+
+  CREATE OBJECT go_cont
+    EXPORTING
+      side      = go_cont->dock_at_left
+      extension = 5000.
+
+  CREATE OBJECT go_alv
+    EXPORTING
+      i_parent = go_cont.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form save_data
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM save_data .
+
+  DATA : lt_save   TYPE TABLE OF ztbox_25_01,
+         ls_save   TYPE ztbox_25_01,
+         lv_answer.
+
+  DATA : lv_tabix TYPE sy-tabix.
+
+  CALL METHOD go_alv->check_changed_data.
+
+  CLEAR gs_body.
+  READ TABLE gt_body INTO gs_body WITH KEY modi_yn = abap_true.
+
+  IF ( gs_body is INITIAL ) and ( gt_delt is INITIAL ).
+    MESSAGE s000 WITH 'no data changed' DISPLAY LIKE 'W'.
+    EXIT.
+  ENDIF.
+
+  PERFORM call_popup USING lv_answer.
+
+  CHECK lv_answer = '1'.
+  LOOP AT gt_body INTO gs_body WHERE modi_yn = abap_true.
+
+    IF gs_body-erdat IS INITIAL.
+      gs_body-erdat = sy-datum.
+      gs_body-ernam = sy-uname.
+      gs_body-erzet = sy-uzeit.
+    ELSE.
+      gs_body-aedat = sy-datum.
+      gs_body-aenam = sy-uname.
+      gs_body-aezet = sy-uzeit.
+    ENDIF.
+
+    gs_body-modi_yn = ' '.
+    MODIFY gt_body FROM gs_body INDEX lv_tabix
+                                TRANSPORTING erdat ernam erzet
+                                             aedat aenam aezet modi_yn.
+
+  ENDLOOP.
+
+  MOVE-CORRESPONDING gt_body TO lt_save.
+
+  DELETE ztbox_25_01 FROM TABLE gt_delt.
+*  IF gs_delt IS NOT INITIAL.
+*    DELETE ztbox_25_01 FROM TABLE gt_delt.
+*  ENDIF.
+
+  MODIFY ztbox_25_01 FROM TABLE lt_save.
+  IF sy-subrc = 0.
+    MESSAGE s000(k5).
+    COMMIT WORK.
+  ELSE.
+    ROLLBACK WORK.
+  ENDIF.
+
+  PERFORM refresh_table.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form refresh_table
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM refresh_table .
+
+  DATA : ls_stable TYPE lvc_s_stbl.
+
+  ls_stable-row = 'X'.
+  ls_stable-col = 'X'.
+
+  CALL METHOD go_alv->refresh_table_display
+    EXPORTING
+      is_stable = ls_stable.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form handle_user_command
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> E_UCOMM
+*&---------------------------------------------------------------------*
+FORM handle_user_command  USING    pv_ucomm.
+
+  CASE pv_ucomm.
+    WHEN 'TOGL'.
+      PERFORM change_data.
+    WHEN 'IROW'.
+      PERFORM insert_row.
+    WHEN 'DROW'.
+      PERFORM delete_row.
+
+  ENDCASE.
+
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form toggle_data
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM change_data .
+
+  CASE gv_mode.
+    WHEN 'E'.
+      gv_mode = 'D'.
+      CALL METHOD go_alv->set_ready_for_input
+        EXPORTING
+          i_ready_for_input = 0.
+    WHEN 'D'.
+      gv_mode = 'E'.
+      CALL METHOD go_alv->set_ready_for_input
+        EXPORTING
+          i_ready_for_input = 1.
+  ENDCASE.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form insert_row
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM insert_row .
+
+  DATA : ls_style TYPE lvc_s_styl.
+
+  CLEAR gs_body.
+  ls_style-style = cl_gui_alv_grid=>mc_style_enabled.
+  INSERT ls_style INTO TABLE gs_body-cell_tab.
+
+  APPEND gs_body TO gt_body.
+
+  PERFORM refresh_table.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form delete_row
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM delete_row .
+
+  DATA : lt_roid TYPE lvc_t_roid,
+         ls_roid TYPE lvc_s_roid.
+
+  CALL METHOD go_alv->get_selected_rows
+    IMPORTING
+      et_row_no = lt_roid.
+
+  IF lt_roid IS INITIAL.
+    MESSAGE s000.
+    EXIT.
+  ENDIF.
+
+  LOOP AT lt_roid INTO ls_roid.
+
+    READ TABLE gt_body INTO gs_body INDEX ls_roid-row_id.
+    MOVE-CORRESPONDING gs_body TO gs_delt.
+    APPEND gs_delt TO gt_delt.
+    CLEAR gs_delt.
+
+    DELETE gt_body INDEX ls_roid-row_id.
+
+  ENDLOOP.
+
+  PERFORM refresh_table.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form handle_edit_toolbar
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> E_INTERACTIVE
+*&      --> E_OBJECT
+*&---------------------------------------------------------------------*
+FORM handle_edit_toolbar  USING    pv_interactive
+                                   po_object TYPE REF TO cl_alv_event_toolbar_set.
+
+  DATA : lv_disabled.
+
+  IF gv_mode EQ 'D'.
+    lv_disabled = 'X'.
+  ENDIF.
+
+  CLEAR : gs_button.
+  gs_button-butn_type = '3'.
+  APPEND gs_button TO po_object->mt_toolbar.
+
+  CLEAR : gs_button.
+  gs_button-function = 'TOGL'.
+  gs_button-icon     = icon_toggle_display_change.
+  APPEND gs_button TO po_object->mt_toolbar.
+
+  CLEAR : gs_button.
+  gs_button-butn_type = '3'.
+  APPEND gs_button TO po_object->mt_toolbar.
+
+  CLEAR : gs_button.
+  gs_button-function = 'IROW'.
+  gs_button-icon     = icon_insert_row.
+  APPEND gs_button TO po_object->mt_toolbar.
+
+  CLEAR : gs_button.
+  gs_button-function = 'DROW'.
+  gs_button-icon     = icon_delete_row.
+  APPEND gs_button TO po_object->mt_toolbar.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form set_screen
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM set_screen .
+
+* display  -> chagne mode# # pk# ## change# ##### #
+
+  DATA : ls_styl  TYPE lvc_s_styl,
+         lv_tabix TYPE sy-tabix.
+
+  LOOP AT gt_body INTO gs_body.
+
+    lv_tabix = sy-tabix.
+
+    ls_styl-fieldname = ' '.
+    ls_styl-style     = cl_gui_alv_grid=>mc_style_enabled.
+    INSERT ls_styl INTO TABLE gs_body-cell_tab.
+    CLEAR ls_styl.
+
+    ls_styl-fieldname = 'BOX_CODE'.
+    ls_styl-style     = cl_gui_alv_grid=>mc_style_disabled.
+    INSERT ls_styl INTO TABLE gs_body-cell_tab.
+    CLEAR ls_styl.
+
+    ls_styl-fieldname = 'TOOL_CODE'.
+    ls_styl-style     = cl_gui_alv_grid=>mc_style_disabled.
+    INSERT ls_styl INTO TABLE gs_body-cell_tab.
+    CLEAR ls_styl.
+
+    MODIFY gt_body FROM gs_body INDEX lv_tabix TRANSPORTING cell_tab.
+
+
+  ENDLOOP.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form register_event
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM register_event .
+
+  go_alv->register_edit_event( go_alv->mc_evt_enter ).
+  go_alv->register_edit_event( go_alv->mc_evt_modified ).
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form handle_modify_value
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> E_MODIFIED
+*&      --> ET_GOOD_CELLS
+*&---------------------------------------------------------------------*
+FORM handle_modify_value  USING    pv_modified
+                                   pt_good_cells TYPE lvc_t_modi.
+
+  CHECK pv_modified IS NOT INITIAL.
+*-- if pv_modified is initial
+*--    exit.
+
+  LOOP AT pt_good_cells INTO DATA(ls_good_cells).
+
+    READ TABLE gt_body INTO gs_body INDEX ls_good_cells-row_id.
+    gs_body-modi_yn = abap_true.
+    MODIFY gt_body FROM gs_body INDEX ls_good_cells-row_id TRANSPORTING modi_yn.
+
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form call_popup
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM call_popup USING pv_answer.
+
+  CALL FUNCTION 'POPUP_TO_CONFIRM'
+    EXPORTING
+     TITLEBAR                    = 'Save Qusetion'
+     DIAGNOSE_OBJECT             = ' '
+      text_question              = '######?'
+     TEXT_BUTTON_1               = 'YES'(001)
+     ICON_BUTTON_1               = ' '
+     TEXT_BUTTON_2               = 'NO'(002)
+     ICON_BUTTON_2               = ' '
+     DEFAULT_BUTTON              = '1'
+     DISPLAY_CANCEL_BUTTON       = 'X'
+   IMPORTING
+     ANSWER                      = pv_answer.
+
+
+ENDFORM.
+
+----------------------------------------------------------------------------------
+Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
