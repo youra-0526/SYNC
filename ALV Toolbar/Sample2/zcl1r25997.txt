@@ -1,0 +1,49 @@
+*&---------------------------------------------------------------------*
+*& Report ZCL1R25997
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+
+INCLUDE zcl1r25997top                           .  " Global Data
+
+INCLUDE zcl1r25997s01                           .  " Selection Screen
+INCLUDE zcl1r25997c01                           .  " Class
+INCLUDE zcl1r25997o01                           .  " PBO-Modules
+INCLUDE zcl1r25997i01                           .  " PAI-Modules
+INCLUDE zcl1r25997f01                           .  " FORM-Routines
+
+*************************************
+* START-OF-SELECTION
+*************************************
+START-OF-SELECTION.
+  PERFORM get_main_data.
+  PERFORM set_screen.
+
+  CALL SCREEN 100.
+
+*  cl_demo_output=>display( gt_body ).
+
+*GUI Texts
+*----------------------------------------------------------
+* TITLE100 --> ALV ## - 2025.03.15
+
+*Text elements
+*----------------------------------------------------------
+* T01 Condition
+
+
+*Selection texts
+*----------------------------------------------------------
+* SO_BUKRS D       .
+* SO_GJAHR D       .
+* SO_MEMID D       .
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: K5
+*000
+
+----------------------------------------------------------------------------------
+Extracted by Direct Download Enterprise version 1.3.1 - E.G.Mellodew. 1998-2005 UK. Sap Release 758
