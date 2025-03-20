@@ -1,5 +1,6 @@
 [문제]
 
+![image (36)](https://github.com/user-attachments/assets/cde1ca05-742c-4f86-a255-7c7989fb141b)
 
 [결과]
 
