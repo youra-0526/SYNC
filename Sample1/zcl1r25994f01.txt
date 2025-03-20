@@ -1,0 +1,87 @@
+*&---------------------------------------------------------------------*
+*& Include          ZCL1R25994F01
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Form SET_INIT_DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM set_init_data .
+
+  so_matn-sign   = 'I'.
+  so_matn-option = 'BT'.
+  so_matn-low    = 'C7HSA'.
+  so_matn-high   = 'MEGA_125'.
+  APPEND so_matn.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form GET_MAIN_DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_main_data .
+
+  "Main data select
+  SELECT matnr ersda vpsta pstat
+         mtart ntgew gewei
+    INTO CORRESPONDING FIELDS OF TABLE gt_body
+    FROM mara
+   WHERE matnr   IN so_matn.
+
+
+  "main data# select# ## #### ## ### ##### stop##
+  IF gt_body IS INITIAL.
+    MESSAGE s000 DISPLAY LIKE 'E'. "data# ### ## ###
+    STOP.
+  ELSE.
+    MESSAGE s001 WITH sy-dbcnt.    "#### ## ### #### ###
+  ENDIF.
+
+  "Text data select
+  SELECT mtart mtbez
+    INTO CORRESPONDING FIELDS OF TABLE gt_text
+    FROM t134t
+   WHERE spras EQ sy-langu.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form GET_TEXT_DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_text_data .
+
+  DATA : lv_tabix TYPE sy-tabix.
+
+  LOOP AT gt_body INTO gs_body. "gt_body # data# gs_body# ### # ## ###
+
+    lv_tabix = sy-tabix.        "index ##
+
+    CLEAR gs_text.
+    READ TABLE gt_text INTO gs_text WITH KEY mtart = gs_body-mtart.
+
+    IF sy-subrc = 0.
+      gs_body-mtbez = gs_text-mtbez.
+      MODIFY gt_body FROM gs_body INDEX lv_tabix TRANSPORTING mtbez.
+    ENDIF.
+
+    IF gs_body-mtbez IS INITIAL.
+      MESSAGE s000 DISPLAY LIKE 'E'.
+    ENDIF.
+
+  ENDLOOP.
+
+ENDFORM.
+
+----------------------------------------------------------------------------------
+Extracted by Mass Download version 1.5.5 - E.G.Mellodew. 1998-2025. Sap Release 753

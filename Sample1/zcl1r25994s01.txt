@@ -1,0 +1,11 @@
+*&---------------------------------------------------------------------*
+*& Include          ZCL1R25994S01
+*&---------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK pa1 WITH FRAME TITLE TEXT-t01.
+
+  SELECT-OPTIONS : so_matn FOR mara-matnr NO-EXTENSION.
+
+SELECTION-SCREEN END OF BLOCK pa1.
+
+----------------------------------------------------------------------------------
+Extracted by Mass Download version 1.5.5 - E.G.Mellodew. 1998-2025. Sap Release 753
